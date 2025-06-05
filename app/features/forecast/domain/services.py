@@ -22,7 +22,7 @@ from .entities import WeatherData, Forecast, ModelMetrics, PrecipitationLevel, W
 logger = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(frozen=True)
 class ForecastConfiguration:
     """Configuração para geração de previsões"""
     sequence_length: int = 24  # Horas de histórico

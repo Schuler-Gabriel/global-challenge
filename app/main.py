@@ -25,6 +25,8 @@ from app.core.exceptions import (
     get_error_details,
     ERROR_STATUS_MAPPING
 )
+from app.features.forecast.presentation import forecast_router
+from app.features.alerts.presentation import alerts_router
 
 
 # Initialize settings and logging
@@ -120,8 +122,8 @@ async def logging_middleware(request: Request, call_next):
         request_logger.info(
             f"Request completed: {request.method} {request.url}",
             extra={
-                "method": request.method,
-                "url": str(request.url),
+                "request_method": request.method,
+                "request_url": str(request.url),
                 "status_code": response.status_code,
                 "process_time": process_time
             }
@@ -140,10 +142,10 @@ async def logging_middleware(request: Request, call_next):
         request_logger.error(
             f"Request failed: {request.method} {request.url}",
             extra={
-                "method": request.method,
-                "url": str(request.url),
+                "request_method": request.method,
+                "request_url": str(request.url),
                 "process_time": process_time,
-                "error": str(e),
+                "error_message": str(e),
                 "error_type": type(e).__name__
             },
             exc_info=True
@@ -366,6 +368,15 @@ async def root():
 
 # app.include_router(forecast_router, prefix=f"{settings.api_v1_prefix}/forecast", tags=["Forecast"])
 # app.include_router(alerts_router, prefix=f"{settings.api_v1_prefix}/alerts", tags=["Alerts"])
+
+
+# Include routers
+app.include_router(forecast_router, prefix=settings.api_v1_prefix)
+app.include_router(alerts_router, prefix=settings.api_v1_prefix)
+
+# Add external APIs router
+from app.features.external_apis.presentation.routes import router as external_apis_router
+app.include_router(external_apis_router, prefix=settings.api_v1_prefix)
 
 
 # Custom OpenAPI Schema

@@ -1,365 +1,285 @@
 """
-Forecast Model Infrastructure - LSTM Weather Prediction
+Forecast Model - Infrastructure Layer
 
-Este módulo implementa o wrapper para o modelo LSTM treinado, integrando
-preprocessing, inferência e postprocessing para previsões meteorológicas.
-
-Baseado na documentação do projeto:
-- Modelo LSTM com precisão > 75% para previsão de chuva 24h
-- Features: 16+ variáveis meteorológicas do INMET
-- Sequence length: 24 horas de histórico
-- Forecast horizon: 24 horas à frente
+Este módulo implementa o wrapper do modelo LSTM para previsão meteorológica.
+Encapsula a funcionalidade de inferência, processamento de entrada e saída,
+e interpretação dos resultados.
 """
 
 import logging
-import numpy as np
-import pandas as pd
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timedelta
-import json
+import numpy as np
 
-import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
-import joblib
-
-from app.core.exceptions import ModelLoadError, PredictionError, ValidationError
-from app.features.forecast.domain.entities import WeatherData, Forecast, ModelMetrics
-
-logger = logging.getLogger(__name__)
+# Importações condicionais para permitir teste sem TensorFlow instalado
+try:
+    import tensorflow as tf
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
 
 
-class WeatherLSTMModel:
+class ForecastModel:
     """
-    Wrapper para modelo LSTM de previsão meteorológica
+    Encapsula o modelo LSTM para previsão meteorológica
     
-    Integra preprocessing, inferência e postprocessing para previsões
-    baseadas nos dados históricos do INMET (2000-2025).
+    Responsabilidades:
+    - Executar inferência com modelo TensorFlow
+    - Processar dados de entrada e saída
+    - Interpretar resultados da previsão
+    - Calcular scores de confiança
     """
     
-    def __init__(self, model_path: Optional[Path] = None):
+    def __init__(self, model=None, model_version: str = "unknown"):
         """
-        Inicializa o wrapper do modelo LSTM
+        Inicializa o modelo de previsão
         
         Args:
-            model_path: Caminho para o modelo treinado (opcional)
+            model: Modelo TensorFlow carregado (opcional)
+            model_version: Versão do modelo
         """
-        self.model_path = model_path or Path('data/modelos_treinados')
-        self.model: Optional[tf.keras.Model] = None
-        self.feature_scaler: Optional[StandardScaler] = None
-        self.target_scaler: Optional[StandardScaler] = None
-        self.metadata: Dict[str, Any] = {}
-        self.feature_columns: List[str] = []
-        self.target_column: str = ""
-        self.sequence_length: int = 24
-        self.forecast_horizon: int = 24
+        self.model = model
+        self.model_version = model_version
+        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         
-        logger.info(f"WeatherLSTMModel inicializado com path: {self.model_path}")
+        # Configurações padrão
+        self.sequence_length = 24  # 24 horas de histórico
+        self.forecast_horizon = 24  # 24 horas de previsão à frente
+        self.features_count = 16   # Número de features
+        
+        # Verificar disponibilidade do TensorFlow
+        if not TENSORFLOW_AVAILABLE and model is not None:
+            self.logger.warning(
+                "TensorFlow não disponível. ForecastModel funcionará em modo de compatibilidade."
+            )
     
-    def load_model(self, model_name: str = "lstm_weather_model") -> bool:
+    def predict(
+        self, 
+        input_data: np.ndarray, 
+        return_confidence: bool = True
+    ) -> Tuple[float, Optional[float]]:
         """
-        Carrega modelo LSTM treinado e seus artefatos
+        Realiza previsão de precipitação
         
         Args:
-            model_name: Nome do modelo a ser carregado
+            input_data: Dados de entrada (shape: [1, sequence_length, features_count])
+            return_confidence: Se deve calcular score de confiança
             
         Returns:
-            bool: True se carregamento foi bem-sucedido
+            Tuple[float, Optional[float]]: (precipitação prevista, score de confiança)
             
         Raises:
-            ModelLoadError: Se não conseguir carregar o modelo
+            RuntimeError: Se modelo não inicializado ou TensorFlow indisponível
         """
-        try:
-            logger.info(f"Carregando modelo: {model_name}")
-            
-            # Carregar modelo TensorFlow
-            model_dir = self.model_path / model_name
-            if not model_dir.exists():
-                raise ModelLoadError(f"Modelo não encontrado: {model_dir}")
-            
-            self.model = tf.keras.models.load_model(model_dir)
-            logger.info(f"✓ Modelo TensorFlow carregado: {self.model.count_params():,} parâmetros")
-            
-            # Carregar metadados
-            metadata_path = self.model_path / 'model_metadata.json'
-            if metadata_path.exists():
-                with open(metadata_path, 'r') as f:
-                    self.metadata = json.load(f)
-                
-                # Extrair configurações dos metadados
-                model_config = self.metadata.get('model_config', {})
-                self.feature_columns = model_config.get('feature_columns', [])
-                self.target_column = model_config.get('target_column', 'precipitacao_mm')
-                self.sequence_length = model_config.get('sequence_length', 24)
-                self.forecast_horizon = model_config.get('forecast_horizon', 24)
-                
-                logger.info(f"✓ Metadados carregados: {len(self.feature_columns)} features")
-            else:
-                logger.warning("Metadados não encontrados, usando configurações padrão")
-                self._set_default_config()
-            
-            # Carregar scalers
-            self._load_scalers()
-            
-            logger.info("✓ Modelo carregado com sucesso")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Erro ao carregar modelo: {e}")
-            raise ModelLoadError(f"Falha ao carregar modelo {model_name}: {str(e)}")
-    
-    def _load_scalers(self):
-        """Carrega scalers de normalização"""
-        try:
-            # Tentar carregar scalers salvos
-            feature_scaler_path = self.model_path / 'feature_scaler.joblib'
-            target_scaler_path = self.model_path / 'target_scaler.joblib'
-            
-            if feature_scaler_path.exists():
-                self.feature_scaler = joblib.load(feature_scaler_path)
-                logger.info("✓ Feature scaler carregado")
-            else:
-                logger.warning("Feature scaler não encontrado, criando novo")
-                self.feature_scaler = StandardScaler()
-            
-            if target_scaler_path.exists():
-                self.target_scaler = joblib.load(target_scaler_path)
-                logger.info("✓ Target scaler carregado")
-            else:
-                logger.warning("Target scaler não encontrado, criando novo")
-                self.target_scaler = StandardScaler()
-                
-        except Exception as e:
-            logger.warning(f"Erro ao carregar scalers: {e}, criando novos")
-            self.feature_scaler = StandardScaler()
-            self.target_scaler = StandardScaler()
-    
-    def _set_default_config(self):
-        """Define configurações padrão baseadas na documentação"""
-        self.feature_columns = [
-            'precipitacao_mm', 'pressao_mb', 'temperatura_c', 'ponto_orvalho_c',
-            'umidade_relativa', 'velocidade_vento_ms', 'direcao_vento_gr', 'radiacao_kjm2',
-            'pressao_max_mb', 'pressao_min_mb', 'temperatura_max_c', 'temperatura_min_c',
-            'umidade_max', 'umidade_min', 'ponto_orvalho_max_c', 'ponto_orvalho_min_c'
-        ]
-        self.target_column = 'precipitacao_mm'
-        self.sequence_length = 24
-        self.forecast_horizon = 24
-    
-    def preprocess_data(self, weather_data: List[WeatherData]) -> np.ndarray:
-        """
-        Preprocessa dados meteorológicos para inferência
+        if self.model is None:
+            raise RuntimeError("Modelo não inicializado")
         
-        Args:
-            weather_data: Lista de dados meteorológicos históricos
-            
-        Returns:
-            np.ndarray: Dados preprocessados para o modelo
-            
-        Raises:
-            ValidationError: Se dados são inválidos
-        """
-        try:
-            if len(weather_data) < self.sequence_length:
-                raise ValidationError(
-                    f"Dados insuficientes: {len(weather_data)} < {self.sequence_length}"
-                )
-            
-            # Converter para DataFrame
-            data_dict = []
-            for wd in weather_data[-self.sequence_length:]:  # Últimas sequence_length horas
-                data_dict.append({
-                    'precipitacao_mm': wd.precipitation,
-                    'pressao_mb': wd.pressure,
-                    'temperatura_c': wd.temperature,
-                    'ponto_orvalho_c': wd.dew_point,
-                    'umidade_relativa': wd.humidity,
-                    'velocidade_vento_ms': wd.wind_speed,
-                    'direcao_vento_gr': wd.wind_direction,
-                    'radiacao_kjm2': wd.radiation or 0.0,
-                    'pressao_max_mb': wd.pressure_max or wd.pressure,
-                    'pressao_min_mb': wd.pressure_min or wd.pressure,
-                    'temperatura_max_c': wd.temperature_max or wd.temperature,
-                    'temperatura_min_c': wd.temperature_min or wd.temperature,
-                    'umidade_max': wd.humidity_max or wd.humidity,
-                    'umidade_min': wd.humidity_min or wd.humidity,
-                    'ponto_orvalho_max_c': wd.dew_point_max or wd.dew_point,
-                    'ponto_orvalho_min_c': wd.dew_point_min or wd.dew_point,
-                })
-            
-            df = pd.DataFrame(data_dict)
-            
-            # Validar colunas necessárias
-            missing_cols = set(self.feature_columns) - set(df.columns)
-            if missing_cols:
-                logger.warning(f"Colunas faltantes: {missing_cols}, preenchendo com 0")
-                for col in missing_cols:
-                    df[col] = 0.0
-            
-            # Extrair features na ordem correta
-            features = df[self.feature_columns].values
-            
-            # Normalizar se scaler estiver disponível
-            if self.feature_scaler and hasattr(self.feature_scaler, 'mean_'):
-                features = self.feature_scaler.transform(features)
-            
-            # Reshape para formato do LSTM: (1, sequence_length, features)
-            features = features.reshape(1, self.sequence_length, len(self.feature_columns))
-            
-            logger.debug(f"Dados preprocessados: shape={features.shape}")
-            return features
-            
-        except Exception as e:
-            logger.error(f"Erro no preprocessing: {e}")
-            raise ValidationError(f"Falha no preprocessing: {str(e)}")
-    
-    def predict(self, weather_data: List[WeatherData]) -> Forecast:
-        """
-        Gera previsão meteorológica usando o modelo LSTM
+        if not TENSORFLOW_AVAILABLE:
+            raise RuntimeError("TensorFlow não disponível para inferência")
         
-        Args:
-            weather_data: Dados meteorológicos históricos (últimas 24h)
+        start_time = datetime.now()
+        
+        # Validar shape dos dados de entrada
+        if len(input_data.shape) != 3:
+            raise ValueError(f"Formato de entrada inválido: {input_data.shape}. Esperado: [1, {self.sequence_length}, {self.features_count}]")
             
-        Returns:
-            Forecast: Previsão de precipitação para 24h à frente
-            
-        Raises:
-            PredictionError: Se não conseguir gerar previsão
-        """
+        # Executar inferência
+        self.logger.debug(f"Executando inferência com modelo {self.model_version}")
+        
         try:
-            if self.model is None:
-                raise PredictionError("Modelo não carregado")
+            prediction = self.model.predict(input_data, verbose=0)
             
-            # Preprocessar dados
-            X = self.preprocess_data(weather_data)
-            
-            # Inferência
-            logger.debug("Executando inferência...")
-            start_time = datetime.now()
-            
-            prediction = self.model.predict(X, verbose=0)
-            
+            # Registrar tempo de inferência
             inference_time = (datetime.now() - start_time).total_seconds() * 1000
-            logger.debug(f"Inferência concluída em {inference_time:.1f}ms")
+            self.logger.debug(f"Inferência concluída em {inference_time:.2f}ms")
             
-            # Postprocessar resultado
-            predicted_value = float(prediction[0, 0])
+            # Extrair valor de precipitação (assumindo que é o primeiro output)
+            precipitation_value = float(prediction[0][0])
             
-            # Desnormalizar se scaler estiver disponível
-            if self.target_scaler and hasattr(self.target_scaler, 'mean_'):
-                predicted_value = self.target_scaler.inverse_transform([[predicted_value]])[0, 0]
+            # Calcular score de confiança se solicitado
+            confidence_score = None
+            if return_confidence:
+                confidence_score = self._calculate_confidence_score(prediction, input_data)
             
-            # Garantir que precipitação não seja negativa
-            predicted_value = max(0.0, predicted_value)
-            
-            # Criar objeto Forecast
-            forecast_time = weather_data[-1].timestamp + timedelta(hours=self.forecast_horizon)
-            
-            forecast = Forecast(
-                timestamp=forecast_time,
-                precipitation_mm=predicted_value,
-                confidence_score=self._calculate_confidence(predicted_value),
-                model_version=self.metadata.get('training_date', 'unknown'),
-                inference_time_ms=inference_time
-            )
-            
-            logger.info(f"Previsão gerada: {predicted_value:.2f}mm em {inference_time:.1f}ms")
-            return forecast
-            
+            return precipitation_value, confidence_score
+        
         except Exception as e:
-            logger.error(f"Erro na previsão: {e}")
-            raise PredictionError(f"Falha na previsão: {str(e)}")
+            self.logger.error(f"Erro durante inferência: {str(e)}")
+            raise RuntimeError(f"Falha na inferência: {str(e)}")
     
-    def _calculate_confidence(self, predicted_value: float) -> float:
+    def _calculate_confidence_score(
+        self, 
+        prediction: np.ndarray, 
+        input_data: np.ndarray
+    ) -> float:
         """
-        Calcula score de confiança baseado no valor previsto
+        Calcula score de confiança para a previsão
         
         Args:
-            predicted_value: Valor de precipitação previsto
+            prediction: Saída do modelo
+            input_data: Entrada do modelo
             
         Returns:
-            float: Score de confiança (0.0 a 1.0)
+            float: Score de confiança (0.0 - 1.0)
         """
-        # Lógica simples baseada em ranges típicos de precipitação
-        if predicted_value < 0.1:  # Sem chuva
-            return 0.9
-        elif predicted_value < 2.0:  # Chuva leve
-            return 0.8
-        elif predicted_value < 10.0:  # Chuva moderada
-            return 0.7
-        elif predicted_value < 50.0:  # Chuva forte
-            return 0.6
-        else:  # Chuva muito forte
-            return 0.5
+        # Nota: Esta é uma implementação simplificada.
+        # Em um sistema real, poderia incorporar:
+        # - Análise estatística de volatilidade
+        # - Comparação com distribuição histórica
+        # - Meta-modelo para estimativa de incerteza
+        
+        # Implementação básica: score baseado na estabilidade dos dados de entrada
+        # Instabilidade = maior variância nos dados de entrada
+        
+        try:
+            # Calcular variância média das features
+            feature_variances = np.var(input_data[0], axis=0)
+            mean_variance = np.mean(feature_variances)
+            
+            # Converter para score (inversamente proporcional à variância)
+            # Quanto maior a variância, menor a confiança
+            raw_score = 1.0 / (1.0 + mean_variance)
+            
+            # Normalizar para range 0.5-1.0
+            # Mesmo com alta variância, garantimos confiança mínima de 0.5
+            confidence = 0.5 + (raw_score * 0.5)
+            
+            return float(confidence)
+        
+        except Exception as e:
+            self.logger.warning(f"Erro ao calcular score de confiança: {str(e)}")
+            return 0.75  # Valor padrão moderado
     
-    def get_model_metrics(self) -> ModelMetrics:
+    def set_model(self, model, model_version: str = "unknown") -> None:
         """
-        Retorna métricas do modelo carregado
+        Define o modelo TensorFlow a ser usado
         
+        Args:
+            model: Modelo TensorFlow
+            model_version: Versão do modelo
+        """
+        self.model = model
+        self.model_version = model_version
+        
+        # Tentar inferir configurações do modelo
+        if TENSORFLOW_AVAILABLE and model is not None:
+            try:
+                # Inferir sequence_length e features_count da forma de entrada
+                input_shape = model.input_shape
+                if input_shape and len(input_shape) >= 3:
+                    self.sequence_length = input_shape[1]
+                    self.features_count = input_shape[2]
+                    self.logger.info(
+                        f"Configurações do modelo inferidas: sequence_length={self.sequence_length}, "
+                        f"features_count={self.features_count}"
+                    )
+            except Exception as e:
+                self.logger.warning(f"Não foi possível inferir configurações do modelo: {str(e)}")
+    
+    def predict_next_hours(
+        self, 
+        input_data: np.ndarray, 
+        hours: int = 24
+    ) -> List[Dict[str, Any]]:
+        """
+        Realiza previsão para as próximas horas
+        
+        Args:
+            input_data: Dados de entrada
+            hours: Número de horas a prever
+            
         Returns:
-            ModelMetrics: Métricas de performance do modelo
+            List[Dict]: Lista de previsões horárias
         """
-        if not self.metadata:
-            return ModelMetrics(
-                mae=0.0, rmse=0.0, accuracy=0.0,
-                model_version="unknown", training_date=datetime.now()
-            )
+        if hours <= 0:
+            raise ValueError("Número de horas deve ser positivo")
         
-        model_metrics = self.metadata.get('model_metrics', {})
+        predictions = []
+        current_time = datetime.now().replace(minute=0, second=0, microsecond=0)
         
-        return ModelMetrics(
-            mae=model_metrics.get('test_mae', 0.0),
-            rmse=model_metrics.get('test_rmse', 0.0),
-            accuracy=model_metrics.get('test_accuracy', 0.0),
-            model_version=self.metadata.get('training_date', 'unknown'),
-            training_date=datetime.fromisoformat(
-                self.metadata.get('training_date', datetime.now().isoformat())
-            )
+        for hour in range(hours):
+            # Para hora atual, fazer previsão direta
+            if hour == 0:
+                precipitation, confidence = self.predict(input_data)
+            else:
+                # Para horas futuras, confiança diminui linearmente
+                # Em um sistema real, faria previsões recorrentes
+                precipitation, base_confidence = self.predict(input_data)
+                confidence = max(0.5, base_confidence * (1.0 - (hour / (2 * hours))))
+            
+            # Criar entrada na lista de previsões
+            prediction_time = current_time + timedelta(hours=hour)
+            predictions.append({
+                "timestamp": prediction_time.isoformat(),
+                "hour": hour,
+                "precipitation_mm": round(precipitation, 2),
+                "confidence_score": round(confidence, 2)
+            })
+        
+        return predictions
+    
+    def is_precipitation_expected(
+        self, 
+        predictions: List[Dict[str, Any]], 
+        threshold: float = 0.1
+    ) -> bool:
+        """
+        Verifica se há previsão de precipitação nas próximas horas
+        
+        Args:
+            predictions: Lista de previsões horárias
+            threshold: Limite mínimo para considerar precipitação (mm/h)
+            
+        Returns:
+            bool: True se chuva é esperada
+        """
+        for prediction in predictions:
+            if prediction["precipitation_mm"] >= threshold:
+                return True
+        return False
+    
+    def get_max_precipitation(self, predictions: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Obtém a previsão com maior precipitação
+        
+        Args:
+            predictions: Lista de previsões horárias
+            
+        Returns:
+            Dict: Previsão com maior precipitação
+        """
+        if not predictions:
+            return {}
+        
+        max_prediction = max(
+            predictions, 
+            key=lambda p: p["precipitation_mm"]
         )
-    
-    def validate_model_performance(self) -> bool:
-        """
-        Valida se o modelo atende aos critérios de performance
         
-        Returns:
-            bool: True se modelo atende aos critérios
-        """
-        metrics = self.get_model_metrics()
-        
-        # Critérios baseados na documentação
-        mae_ok = metrics.mae < 2.0  # MAE < 2.0 mm/h
-        rmse_ok = metrics.rmse < 3.0  # RMSE < 3.0 mm/h
-        accuracy_ok = metrics.accuracy > 0.75  # Accuracy > 75%
-        
-        logger.info(f"Validação do modelo:")
-        logger.info(f"  MAE: {metrics.mae:.4f} < 2.0: {'✓' if mae_ok else '✗'}")
-        logger.info(f"  RMSE: {metrics.rmse:.4f} < 3.0: {'✓' if rmse_ok else '✗'}")
-        logger.info(f"  Accuracy: {metrics.accuracy:.4f} > 0.75: {'✓' if accuracy_ok else '✗'}")
-        
-        return mae_ok and rmse_ok and accuracy_ok
-    
-    def is_loaded(self) -> bool:
-        """Verifica se o modelo está carregado"""
-        return self.model is not None
+        return max_prediction
     
     def get_model_info(self) -> Dict[str, Any]:
         """
-        Retorna informações sobre o modelo carregado
+        Obtém informações sobre o modelo carregado
         
         Returns:
             Dict: Informações do modelo
         """
-        if not self.is_loaded():
-            return {"status": "not_loaded"}
-        
-        return {
-            "status": "loaded",
-            "model_path": str(self.model_path),
-            "parameters": self.model.count_params(),
+        info = {
+            "model_version": self.model_version,
             "sequence_length": self.sequence_length,
+            "features_count": self.features_count,
             "forecast_horizon": self.forecast_horizon,
-            "features_count": len(self.feature_columns),
-            "target_column": self.target_column,
-            "tensorflow_version": tf.__version__,
-            "metadata": self.metadata
-        } 
+            "is_loaded": self.model is not None
+        }
+        
+        # Adicionar informações do TensorFlow se disponível
+        if TENSORFLOW_AVAILABLE and self.model is not None:
+            try:
+                info["input_shape"] = self.model.input_shape
+                info["output_shape"] = self.model.output_shape
+                info["layers_count"] = len(self.model.layers)
+            except Exception:
+                pass
+        
+        return info 

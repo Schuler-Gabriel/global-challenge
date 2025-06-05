@@ -1,472 +1,258 @@
 """
-Model Loader Infrastructure - LSTM Model Management
+Model Loader - Infrastructure Layer
 
-Este módulo implementa o carregamento, versionamento e gerenciamento
-de modelos LSTM treinados para previsão meteorológica.
-
-Funcionalidades:
-- Carregamento automático de modelos
-- Versionamento e fallback
-- Validação de integridade
-- Cache de modelos em memória
+Este módulo implementa o carregamento de modelos TensorFlow para inferência.
+É responsável por gerenciar o ciclo de vida dos modelos, carregamento eficiente
+e metadados associados.
 """
 
-import logging
+import os
 import json
-import shutil
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, Any, Optional
+import logging
 from datetime import datetime
-from dataclasses import dataclass
-import hashlib
+import glob
 
-import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
-import joblib
-
-from app.core.exceptions import ModelLoadError, ValidationError
-from app.features.forecast.infra.forecast_model import WeatherLSTMModel
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ModelVersion:
-    """Informações de uma versão do modelo"""
-    name: str
-    path: Path
-    version: str
-    training_date: datetime
-    metrics: Dict[str, float]
-    file_hash: str
-    is_valid: bool
+# Importações condicionais para permitir teste sem TensorFlow instalado
+try:
+    import tensorflow as tf
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
 
 
 class ModelLoader:
     """
-    Gerenciador de carregamento e versionamento de modelos LSTM
+    Responsável por carregar e gerenciar modelos TensorFlow
     
-    Responsável por:
-    - Descobrir modelos disponíveis
-    - Validar integridade dos modelos
-    - Implementar estratégias de fallback
-    - Cache de modelos em memória
+    Características:
+    - Carregamento de modelos salvos em formato SavedModel
+    - Suporte a diferentes versões de modelo
+    - Cache de modelos carregados para performance
+    - Metadados de modelo (data, métricas, parâmetros)
     """
     
-    def __init__(self, models_path: Optional[Path] = None):
+    def __init__(self, models_dir: str):
         """
-        Inicializa o carregador de modelos
+        Inicializa o loader de modelos
         
         Args:
-            models_path: Caminho para diretório de modelos
+            models_dir: Diretório onde os modelos estão armazenados
         """
-        self.models_path = models_path or Path('data/modelos_treinados')
-        self.models_path.mkdir(exist_ok=True)
+        self.models_dir = models_dir
+        self.models_cache: Dict[str, Any] = {}  # Versão -> Modelo carregado
+        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         
-        # Cache de modelos carregados
-        self._model_cache: Dict[str, WeatherLSTMModel] = {}
-        self._available_models: List[ModelVersion] = []
-        
-        logger.info(f"ModelLoader inicializado: {self.models_path}")
-    
-    def discover_models(self) -> List[ModelVersion]:
-        """
-        Descobre todos os modelos disponíveis no diretório
-        
-        Returns:
-            List[ModelVersion]: Lista de modelos encontrados
-        """
-        logger.info("Descobrindo modelos disponíveis...")
-        
-        models = []
-        
-        # Procurar por diretórios de modelos TensorFlow
-        for model_dir in self.models_path.iterdir():
-            if model_dir.is_dir() and (model_dir / 'saved_model.pb').exists():
-                try:
-                    model_version = self._analyze_model(model_dir)
-                    if model_version:
-                        models.append(model_version)
-                        logger.info(f"✓ Modelo encontrado: {model_version.name} (v{model_version.version})")
-                except Exception as e:
-                    logger.warning(f"Erro ao analisar modelo {model_dir.name}: {e}")
-        
-        # Procurar por arquivos .h5/.keras
-        for model_file in self.models_path.glob("*.h5"):
-            try:
-                model_version = self._analyze_h5_model(model_file)
-                if model_version:
-                    models.append(model_version)
-                    logger.info(f"✓ Modelo H5 encontrado: {model_version.name}")
-            except Exception as e:
-                logger.warning(f"Erro ao analisar modelo H5 {model_file.name}: {e}")
-        
-        # Ordenar por data de treinamento (mais recente primeiro)
-        models.sort(key=lambda x: x.training_date, reverse=True)
-        
-        self._available_models = models
-        logger.info(f"Total de modelos encontrados: {len(models)}")
-        
-        return models
-    
-    def _analyze_model(self, model_dir: Path) -> Optional[ModelVersion]:
-        """Analisa um diretório de modelo TensorFlow"""
-        try:
-            # Carregar metadados se disponíveis
-            metadata_path = self.models_path / 'model_metadata.json'
-            metadata = {}
-            
-            if metadata_path.exists():
-                with open(metadata_path, 'r') as f:
-                    metadata = json.load(f)
-            
-            # Calcular hash do modelo
-            file_hash = self._calculate_model_hash(model_dir)
-            
-            # Extrair informações
-            training_date_str = metadata.get('training_date', datetime.now().isoformat())
-            training_date = datetime.fromisoformat(training_date_str.replace('Z', '+00:00'))
-            
-            version = training_date.strftime('%Y%m%d_%H%M%S')
-            metrics = metadata.get('model_metrics', {})
-            
-            # Validar modelo
-            is_valid = self._validate_model_files(model_dir)
-            
-            return ModelVersion(
-                name=model_dir.name,
-                path=model_dir,
-                version=version,
-                training_date=training_date,
-                metrics=metrics,
-                file_hash=file_hash,
-                is_valid=is_valid
+        # Verificar disponibilidade do TensorFlow
+        if not TENSORFLOW_AVAILABLE:
+            self.logger.warning(
+                "TensorFlow não disponível. ModelLoader funcionará em modo de compatibilidade."
             )
-            
-        except Exception as e:
-            logger.error(f"Erro ao analisar modelo {model_dir}: {e}")
-            return None
     
-    def _analyze_h5_model(self, model_file: Path) -> Optional[ModelVersion]:
-        """Analisa um arquivo de modelo H5"""
-        try:
-            # Usar timestamp do arquivo como versão
-            stat = model_file.stat()
-            training_date = datetime.fromtimestamp(stat.st_mtime)
-            version = training_date.strftime('%Y%m%d_%H%M%S')
-            
-            # Calcular hash
-            file_hash = self._calculate_file_hash(model_file)
-            
-            return ModelVersion(
-                name=model_file.stem,
-                path=model_file,
-                version=version,
-                training_date=training_date,
-                metrics={},
-                file_hash=file_hash,
-                is_valid=True  # Assumir válido para arquivos H5
-            )
-            
-        except Exception as e:
-            logger.error(f"Erro ao analisar modelo H5 {model_file}: {e}")
-            return None
-    
-    def _validate_model_files(self, model_dir: Path) -> bool:
-        """Valida se os arquivos do modelo estão íntegros"""
-        required_files = ['saved_model.pb']
-        variables_dir = model_dir / 'variables'
-        
-        # Verificar arquivos obrigatórios
-        for file_name in required_files:
-            if not (model_dir / file_name).exists():
-                logger.warning(f"Arquivo obrigatório não encontrado: {file_name}")
-                return False
-        
-        # Verificar diretório de variáveis
-        if not variables_dir.exists():
-            logger.warning("Diretório 'variables' não encontrado")
-            return False
-        
-        # Verificar se há arquivos de variáveis
-        var_files = list(variables_dir.glob("variables.*"))
-        if not var_files:
-            logger.warning("Arquivos de variáveis não encontrados")
-            return False
-        
-        return True
-    
-    def _calculate_model_hash(self, model_dir: Path) -> str:
-        """Calcula hash MD5 dos arquivos do modelo"""
-        hasher = hashlib.md5()
-        
-        # Hash do arquivo principal
-        saved_model_path = model_dir / 'saved_model.pb'
-        if saved_model_path.exists():
-            hasher.update(saved_model_path.read_bytes())
-        
-        # Hash dos arquivos de variáveis
-        variables_dir = model_dir / 'variables'
-        if variables_dir.exists():
-            for var_file in sorted(variables_dir.glob("variables.*")):
-                hasher.update(var_file.read_bytes())
-        
-        return hasher.hexdigest()
-    
-    def _calculate_file_hash(self, file_path: Path) -> str:
-        """Calcula hash MD5 de um arquivo"""
-        hasher = hashlib.md5()
-        hasher.update(file_path.read_bytes())
-        return hasher.hexdigest()
-    
-    def load_best_model(self) -> WeatherLSTMModel:
-        """
-        Carrega o melhor modelo disponível
-        
-        Returns:
-            WeatherLSTMModel: Modelo carregado
-            
-        Raises:
-            ModelLoadError: Se não conseguir carregar nenhum modelo
-        """
-        if not self._available_models:
-            self.discover_models()
-        
-        if not self._available_models:
-            raise ModelLoadError("Nenhum modelo disponível")
-        
-        # Tentar carregar modelos em ordem de prioridade
-        for model_version in self._available_models:
-            if not model_version.is_valid:
-                continue
-            
-            try:
-                return self.load_model(model_version.name)
-            except Exception as e:
-                logger.warning(f"Falha ao carregar modelo {model_version.name}: {e}")
-                continue
-        
-        raise ModelLoadError("Não foi possível carregar nenhum modelo válido")
-    
-    def load_model(self, model_name: str) -> WeatherLSTMModel:
+    def load_model(self, model_version: str) -> Any:
         """
         Carrega um modelo específico
         
         Args:
-            model_name: Nome do modelo a carregar
+            model_version: Versão do modelo a carregar
             
         Returns:
-            WeatherLSTMModel: Modelo carregado
+            Model: Modelo TensorFlow carregado
             
         Raises:
-            ModelLoadError: Se não conseguir carregar o modelo
+            FileNotFoundError: Se modelo não encontrado
+            RuntimeError: Se TensorFlow não disponível
         """
-        # Verificar cache
-        if model_name in self._model_cache:
-            logger.info(f"Modelo {model_name} carregado do cache")
-            return self._model_cache[model_name]
+        # Verificar se modelo já está em cache
+        if model_version in self.models_cache:
+            self.logger.info(f"Usando modelo em cache: {model_version}")
+            return self.models_cache[model_version]
         
-        logger.info(f"Carregando modelo: {model_name}")
+        # Verificar disponibilidade do TensorFlow
+        if not TENSORFLOW_AVAILABLE:
+            raise RuntimeError(
+                "TensorFlow não disponível. Impossível carregar modelo."
+            )
+        
+        # Construir caminho do modelo
+        model_path = os.path.join(self.models_dir, model_version)
+        
+        # Verificar se existe
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modelo não encontrado: {model_path}")
+        
+        # Carregar o modelo
+        self.logger.info(f"Carregando modelo: {model_version} de {model_path}")
+        start_time = datetime.now()
         
         try:
-            # Criar instância do modelo
-            model = WeatherLSTMModel(self.models_path)
+            model = tf.keras.models.load_model(model_path)
             
-            # Carregar modelo
-            success = model.load_model(model_name)
-            if not success:
-                raise ModelLoadError(f"Falha ao carregar modelo {model_name}")
+            # Registrar tempo de carregamento
+            load_time = (datetime.now() - start_time).total_seconds()
+            self.logger.info(f"Modelo carregado em {load_time:.2f}s: {model_version}")
             
-            # Validar performance se possível
-            if model.metadata:
-                if not model.validate_model_performance():
-                    logger.warning(f"Modelo {model_name} não atende aos critérios de performance")
+            # Armazenar em cache
+            self.models_cache[model_version] = model
             
-            # Adicionar ao cache
-            self._model_cache[model_name] = model
-            
-            logger.info(f"✓ Modelo {model_name} carregado com sucesso")
             return model
-            
+        
         except Exception as e:
-            logger.error(f"Erro ao carregar modelo {model_name}: {e}")
-            raise ModelLoadError(f"Falha ao carregar modelo {model_name}: {str(e)}")
+            self.logger.error(f"Erro ao carregar modelo {model_version}: {str(e)}")
+            raise RuntimeError(f"Falha ao carregar modelo: {str(e)}")
     
-    def load_model_with_fallback(self, preferred_model: Optional[str] = None) -> WeatherLSTMModel:
+    def get_available_models(self) -> Dict[str, Dict[str, Any]]:
         """
-        Carrega modelo com estratégia de fallback
+        Lista todos os modelos disponíveis com metadados
+        
+        Returns:
+            Dict: Mapeamento de versão -> metadados
+        """
+        models = {}
+        
+        # Procurar diretórios de modelo
+        for model_dir in glob.glob(os.path.join(self.models_dir, "*")):
+            if os.path.isdir(model_dir):
+                version = os.path.basename(model_dir)
+                metadata = self.get_model_metadata(version)
+                models[version] = metadata
+        
+        return models
+    
+    def get_model_metadata(self, model_version: str) -> Dict[str, Any]:
+        """
+        Obtém metadados de um modelo específico
         
         Args:
-            preferred_model: Nome do modelo preferido (opcional)
+            model_version: Versão do modelo
             
         Returns:
-            WeatherLSTMModel: Modelo carregado
+            Dict: Metadados do modelo
         """
-        # Tentar carregar modelo preferido primeiro
-        if preferred_model:
+        # Construir caminho do arquivo de metadados
+        metadata_path = os.path.join(self.models_dir, model_version, "metadata.json")
+        
+        # Valores padrão
+        metadata = {
+            "version": model_version,
+            "created_at": None,
+            "input_shape": None,
+            "output_shape": None,
+            "features": None,
+            "performance": {}
+        }
+        
+        # Tentar carregar metadados
+        if os.path.exists(metadata_path):
             try:
-                return self.load_model(preferred_model)
+                with open(metadata_path, "r") as f:
+                    loaded_metadata = json.load(f)
+                    metadata.update(loaded_metadata)
             except Exception as e:
-                logger.warning(f"Falha ao carregar modelo preferido {preferred_model}: {e}")
+                self.logger.warning(f"Erro ao carregar metadados para {model_version}: {str(e)}")
         
-        # Fallback para o melhor modelo disponível
-        return self.load_best_model()
+        # Se modelo está em cache, adicionar informações extras
+        if TENSORFLOW_AVAILABLE and model_version in self.models_cache:
+            model = self.models_cache[model_version]
+            try:
+                metadata["input_shape"] = model.input_shape
+                metadata["output_shape"] = model.output_shape
+            except Exception:
+                pass
+        
+        return metadata
     
-    def get_model_info(self, model_name: str) -> Optional[Dict[str, Any]]:
+    def save_model_metadata(self, model_version: str, metadata: Dict[str, Any]) -> bool:
         """
-        Retorna informações sobre um modelo específico
+        Salva metadados de um modelo
         
         Args:
-            model_name: Nome do modelo
+            model_version: Versão do modelo
+            metadata: Metadados a salvar
             
         Returns:
-            Dict: Informações do modelo ou None se não encontrado
+            bool: True se salvou com sucesso
         """
-        for model_version in self._available_models:
-            if model_version.name == model_name:
-                return {
-                    "name": model_version.name,
-                    "version": model_version.version,
-                    "training_date": model_version.training_date.isoformat(),
-                    "metrics": model_version.metrics,
-                    "file_hash": model_version.file_hash,
-                    "is_valid": model_version.is_valid,
-                    "path": str(model_version.path)
-                }
-        return None
-    
-    def list_available_models(self) -> List[Dict[str, Any]]:
-        """
-        Lista todos os modelos disponíveis
+        # Construir caminho do arquivo de metadados
+        model_dir = os.path.join(self.models_dir, model_version)
+        metadata_path = os.path.join(model_dir, "metadata.json")
         
-        Returns:
-            List[Dict]: Lista de informações dos modelos
-        """
-        if not self._available_models:
-            self.discover_models()
-        
-        return [
-            {
-                "name": mv.name,
-                "version": mv.version,
-                "training_date": mv.training_date.isoformat(),
-                "metrics": mv.metrics,
-                "is_valid": mv.is_valid,
-                "file_hash": mv.file_hash[:8]  # Apenas primeiros 8 caracteres
-            }
-            for mv in self._available_models
-        ]
-    
-    def validate_model_integrity(self, model_name: str) -> bool:
-        """
-        Valida a integridade de um modelo
-        
-        Args:
-            model_name: Nome do modelo
-            
-        Returns:
-            bool: True se modelo está íntegro
-        """
-        model_info = self.get_model_info(model_name)
-        if not model_info:
-            return False
-        
-        model_path = Path(model_info["path"])
-        
-        if model_path.is_dir():
-            # Modelo TensorFlow SavedModel
-            return self._validate_model_files(model_path)
-        elif model_path.suffix in ['.h5', '.keras']:
-            # Modelo H5/Keras
-            return model_path.exists()
-        
-        return False
-    
-    def cleanup_cache(self):
-        """Remove modelos do cache de memória"""
-        logger.info(f"Limpando cache de modelos ({len(self._model_cache)} modelos)")
-        self._model_cache.clear()
-    
-    def backup_model(self, model_name: str, backup_dir: Optional[Path] = None) -> bool:
-        """
-        Cria backup de um modelo
-        
-        Args:
-            model_name: Nome do modelo
-            backup_dir: Diretório de backup (opcional)
-            
-        Returns:
-            bool: True se backup foi criado com sucesso
-        """
-        try:
-            model_info = self.get_model_info(model_name)
-            if not model_info:
-                logger.error(f"Modelo {model_name} não encontrado")
+        # Verificar se diretório existe
+        if not os.path.exists(model_dir):
+            try:
+                os.makedirs(model_dir)
+            except Exception as e:
+                self.logger.error(f"Erro ao criar diretório para {model_version}: {str(e)}")
                 return False
-            
-            source_path = Path(model_info["path"])
-            backup_dir = backup_dir or (self.models_path / 'backups')
-            backup_dir.mkdir(exist_ok=True)
-            
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            backup_name = f"{model_name}_backup_{timestamp}"
-            backup_path = backup_dir / backup_name
-            
-            if source_path.is_dir():
-                shutil.copytree(source_path, backup_path)
-            else:
-                shutil.copy2(source_path, backup_path.with_suffix(source_path.suffix))
-            
-            logger.info(f"✓ Backup criado: {backup_path}")
+        
+        # Salvar metadados
+        try:
+            with open(metadata_path, "w") as f:
+                json.dump(metadata, f, indent=2)
             return True
-            
         except Exception as e:
-            logger.error(f"Erro ao criar backup do modelo {model_name}: {e}")
+            self.logger.error(f"Erro ao salvar metadados para {model_version}: {str(e)}")
             return False
     
-    def delete_model(self, model_name: str, create_backup: bool = True) -> bool:
+    def get_latest_model_version(self) -> Optional[str]:
         """
-        Remove um modelo do sistema
+        Obtém a versão mais recente do modelo disponível
+        
+        Returns:
+            Optional[str]: Versão mais recente ou None
+        """
+        models = self.get_available_models()
+        
+        if not models:
+            return None
+        
+        # Ordenar por data de criação (se disponível)
+        def get_created_date(version):
+            metadata = models[version]
+            created_at = metadata.get("created_at")
+            if created_at:
+                try:
+                    return datetime.fromisoformat(created_at)
+                except (ValueError, TypeError):
+                    pass
+            return datetime.min
+        
+        sorted_versions = sorted(models.keys(), key=get_created_date, reverse=True)
+        return sorted_versions[0] if sorted_versions else None
+    
+    def clear_cache(self) -> None:
+        """Limpa o cache de modelos carregados"""
+        self.models_cache.clear()
+        
+    def get_model_summary(self, model_version: str) -> Optional[str]:
+        """
+        Obtém o resumo do modelo (estrutura)
         
         Args:
-            model_name: Nome do modelo
-            create_backup: Se deve criar backup antes de deletar
+            model_version: Versão do modelo
             
         Returns:
-            bool: True se modelo foi removido com sucesso
+            Optional[str]: Resumo do modelo ou None
         """
-        try:
-            if create_backup:
-                self.backup_model(model_name)
-            
-            model_info = self.get_model_info(model_name)
-            if not model_info:
-                logger.error(f"Modelo {model_name} não encontrado")
-                return False
-            
-            model_path = Path(model_info["path"])
-            
-            if model_path.is_dir():
-                shutil.rmtree(model_path)
-            else:
-                model_path.unlink()
-            
-            # Remover do cache
-            if model_name in self._model_cache:
-                del self._model_cache[model_name]
-            
-            # Atualizar lista de modelos
-            self._available_models = [
-                mv for mv in self._available_models if mv.name != model_name
-            ]
-            
-            logger.info(f"✓ Modelo {model_name} removido")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Erro ao remover modelo {model_name}: {e}")
-            return False
-
-
-# Instância global do carregador de modelos
-model_loader = ModelLoader() 
+        if not TENSORFLOW_AVAILABLE:
+            return None
+        
+        # Carregar modelo se não estiver em cache
+        if model_version not in self.models_cache:
+            try:
+                self.load_model(model_version)
+            except Exception:
+                return None
+        
+        # Obter resumo
+        model = self.models_cache[model_version]
+        
+        # Capturar saída do summary()
+        import io
+        from contextlib import redirect_stdout
+        
+        f = io.StringIO()
+        with redirect_stdout(f):
+            model.summary()
+        
+        return f.getvalue() 

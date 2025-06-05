@@ -36,8 +36,10 @@ class ForecastQuery:
     model_version: Optional[str] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    confidence_threshold: Optional[float] = None
+    min_confidence: Optional[float] = None
     limit: Optional[int] = None
+    order_by: str = 'timestamp'
+    order_direction: str = 'desc'  # 'asc' ou 'desc'
 
 
 class WeatherDataRepository(ABC):

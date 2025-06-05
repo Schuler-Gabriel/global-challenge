@@ -205,6 +205,7 @@ class Forecast:
     confidence_score: float  # Score de confiança (0.0 - 1.0)
     model_version: str  # Versão do modelo utilizado
     inference_time_ms: float  # Tempo de inferência em ms
+    id: Optional[str] = None  # ID único da previsão
     
     # Metadados opcionais
     input_sequence_length: Optional[int] = None
@@ -280,6 +281,7 @@ class Forecast:
             Dict: Representação em dicionário
         """
         return {
+            'id': self.id,
             'timestamp': self.timestamp.isoformat(),
             'precipitation_mm': self.precipitation_mm,
             'confidence_score': self.confidence_score,

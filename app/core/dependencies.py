@@ -66,7 +66,10 @@ def get_request_logger(request: Request) -> logging.Logger:
 
 
 # HTTP Client Dependencies
-async def get_http_client() -> Generator[httpx.AsyncClient, None, None]:
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def get_http_client():
     """
     Get HTTP client for external API calls.
     
