@@ -4,13 +4,19 @@
 
 ### 📋 Visão Geral
 
-Sistema inteligente de previsão meteorológica e alertas de cheias para Porto Alegre, utilizando dados históricos meteorológicos do INMET (2000-2025) e APIs em tempo real do nível do Rio Guaíba e condições meteorológicas.
+Sistema inteligente de previsão meteorológica e alertas de cheias para Porto Alegre, utilizando **estratégia híbrida de dados meteorológicos** combinando:
+
+- **Dados históricos INMET** (2000-2025) para validação local
+- **Open-Meteo Historical Forecast API** (2022-2025) com dados de níveis de pressão 500hPa e 850hPa
+- **Open-Meteo Historical Weather API** (2000-2024) para análise de tendências de longo prazo
+- **APIs em tempo real** do nível do Rio Guaíba e condições meteorológicas
 
 ### 🎯 Objetivos
 
-- **IA Preditiva**: Modelo LSTM com precisão > 75% para previsão de chuva 24h
+- **IA Preditiva Avançada**: Modelo LSTM híbrido com precisão > 80% para previsão de 4 dias usando dados sinóticos
+- **Análise Atmosférica Completa**: Dados de níveis de pressão 500hPa e 850hPa para detecção de frentes frias
 - **API Robusta**: FastAPI com alta disponibilidade e resposta rápida
-- **Alertas Inteligentes**: Sistema automatizado baseado em matriz de risco
+- **Alertas Inteligentes**: Sistema automatizado baseado em matriz de risco atualizada
 - **Arquitetura Limpa**: Clean Architecture organizada por features
 - **Monitoramento**: Logs estruturados e métricas de performance
 
@@ -182,11 +188,252 @@ jupytext --to ipynb notebooks/python/nome_arquivo.py
 4. **Automação**: Pipeline de conversão padronizado
 5. **Backup**: Fonte única de verdade nos arquivos Python
 
-### 📊 Dados Meteorológicos Históricos
+### 📊 Estratégia Híbrida de Dados Meteorológicos
+
+#### 🎯 Resumo Executivo
+
+**Decisão Final**: Implementar **estratégia híbrida Open-Meteo** como fonte principal de dados meteorológicos, mantendo dados INMET apenas para **validação opcional**.
+
+**Motivação**: Após análise comparativa detalhada, a combinação das APIs Open-Meteo oferece:
+
+- ✅ **Primeira vez** com dados de níveis de pressão 500hPa e 850hPa
+- ✅ **Melhoria esperada de +10-15%** na accuracy do modelo (de ~70% para 82-87%)
+- ✅ **25+ anos** de cobertura temporal (2000-2025)
+- ✅ **149 variáveis atmosféricas** vs ~10 variáveis INMET
+- ✅ **Gratuito e bem documentado**
+
+**Implementação Validada**: ✅ Testes confirmaram acesso aos dados de pressão atmosphere
+
+#### 🌍 Visão Geral da Estratégia
+
+Com base na **análise comparativa das APIs Open-Meteo** realizada, o projeto implementa uma **estratégia híbrida** que combina múltiplas fontes de dados para maximizar a precisão das previsões de cheias:
+
+#### 📈 Fontes de Dados Primárias
+
+| Aspecto                    | Historical Weather (ERA5) | Historical Forecast (High-res) | INMET Porto Alegre       |
+| -------------------------- | ------------------------- | ------------------------------ | ------------------------ |
+| **Período**                | 1940-presente (84+ anos)  | 2022-presente (3+ anos)        | 2000-presente (24+ anos) |
+| **Resolução Espacial**     | 25km (global)             | 2-25km (melhor modelo)         | Pontual                  |
+| **Dados 500hPa/850hPa**    | ❌ Não disponível         | ✅ Completo                    | ❌ Não disponível        |
+| **Variáveis Surface**      | 25 variáveis              | 35+ variáveis                  | ~10 variáveis            |
+| **Consistência Temporal**  | ⭐⭐⭐⭐⭐ Excelente      | ⭐⭐⭐ Boa                     | ⭐⭐⭐⭐ Muito boa       |
+| **Precisão Local**         | ⭐⭐⭐ Boa                | ⭐⭐⭐⭐ Muito boa             | ⭐⭐⭐⭐⭐ Excelente     |
+| **Variáveis Atmosféricas** | ⭐⭐ Limitadas            | ⭐⭐⭐⭐⭐ Completas           | ⭐ Básicas               |
+| **Delay Dados**            | 5 dias                    | 2 dias                         | Variável                 |
+| **Custo**                  | Gratuito                  | Gratuito                       | Gratuito                 |
+| **Uso Recomendado**        | Baseline histórico        | **Modelo principal**           | Validação opcional       |
+
+#### 🔄 Arquitetura de Dados Híbrida
+
+**FASE 1: Modelo Principal com Dados Atmosféricos Completos** ⭐
+
+- **Fonte**: Historical Forecast API (2022-2025)
+- **Período**: 3+ anos (SUFICIENTE para modelo confiável)
+- **Features Principais**:
+  - ✅ **Temperatura 500hPa e 850hPa** (análise sinótica)
+  - ✅ **Vento e umidade em níveis de pressão**
+  - ✅ **Altura geopotencial** (detecção de sistemas)
+  - ✅ **CAPE e Lifted Index** (instabilidade atmosférica)
+  - ✅ **Dados de superfície completos** (35+ variáveis)
+
+**FASE 2: Extensão Temporal com Dados de Superfície**
+
+- **Fonte**: Historical Weather API (2000-2021)
+- **Período**: 21+ anos adiccionais
+- **Abordagem**: Transfer learning ou feature engineering
+- **Features**:
+  - Dados de superfície apenas (25 variáveis)
+  - Extensão para análise de padrões de longo prazo
+  - Features derivadas de pressão atmosférica
+
+**FASE 3: Validação Local (Opcional)**
+
+- **Fonte**: INMET Porto Alegre (2000-2024)
+- **Uso**: Validação e possível calibração local
+- **Decisão**: Usar apenas se Open-Meteo mostrar desvios significativos
+
+#### 🌦️ Dados de Níveis de Pressão Disponíveis
+
+**Historical Forecast API - Níveis de Pressão:**
+
+```python
+pressure_levels = {
+    '1000hPa': '110m above sea level',    # Camada de mistura
+    '850hPa': '1500m above sea level',    # ⭐ FRENTES FRIAS - Temperatura e vento
+    '700hPa': '3000m above sea level',    # Nível médio
+    '500hPa': '5600m above sea level',    # ⭐ VÓRTICES - Padrões sinóticos
+    '300hPa': '9200m above sea level',    # Corrente de jato
+    '200hPa': '11800m above sea level'    # Alta troposfera
+}
+
+variables_per_level = [
+    'temperature',           # Análise térmica
+    'relative_humidity',     # Umidade em altitude
+    'cloud_cover',          # Cobertura de nuvens
+    'wind_speed',           # Vento em altitude
+    'wind_direction',       # Direção do vento
+    'geopotential_height'   # Altura real dos níveis
+]
+
+# Total: 19 níveis × 6 variáveis = 114 variáveis de pressão
+```
+
+#### 🧠 Feature Engineering Avançada
+
+**Features de Níveis de Pressão:**
+
+- **Gradiente térmico 850hPa-500hPa**: Detecta instabilidade atmosférica
+- **Advecção de temperatura em 850hPa**: Aproximação de frentes frias
+- **Vorticidade em 500hPa**: Identificação de vórtices ciclônicos
+- **Wind shear vertical**: Cisalhamento do vento entre níveis
+- **Altura geopotencial 500hPa**: Padrões de ondas planetárias
+
+**Features de Superfície:**
+
+- **Pressão atmosférica e tendência**: Aproximação de sistemas
+- **Umidade relativa e déficit de vapor**: Potencial de precipitação
+- **Temperatura e ponto de orvalho**: Instabilidade local
+- **Precipitação acumulada**: Histórico recente
+
+**Features Derivadas:**
+
+- **Índices de instabilidade atmosférica**: K-Index, CAPE, Lifted Index
+- **Padrões sinóticos automatizados**: Classificação de tipos de tempo
+- **Features temporais**: Sazonalidade, tendências, ciclos
+
+#### 🏗️ Arquitetura de Modelo Híbrido
+
+**Modelo Ensemble Recomendado:**
+
+```python
+hybrid_model = {
+    'component_1': {
+        'type': 'LSTM Neural Network',
+        'data': 'Historical Forecast API (2022-2025)',
+        'features': 'Níveis de pressão + superfície (149 variáveis)',
+        'expected_accuracy': '80-85%'
+    },
+    'component_2': {
+        'type': 'LSTM Neural Network',
+        'data': 'Historical Weather API (2000-2024)',
+        'features': 'Apenas superfície (25 variáveis)',
+        'expected_accuracy': '70-75%'
+    },
+    'ensemble': {
+        'type': 'Weighted Average / Stacking',
+        'weights': [0.7, 0.3],  # Maior peso para dados com níveis de pressão
+        'expected_accuracy': '82-87%'
+    }
+}
+```
+
+#### 📊 Performance Esperada
+
+- **Com níveis de pressão (Historical Forecast)**: **Accuracy >80%**
+- **Apenas superfície (Historical Weather)**: **Accuracy ~70%**
+- **Modelo híbrido ensemble**: **Accuracy 82-87%**
+- **Melhoria esperada**: **+10-15%** com dados atmosféricos completos
+
+#### 🔄 Pipeline de Coleta de Dados
+
+```python
+# 1. Coleta Historical Forecast API (dados principais)
+historical_forecast_data = collect_openmeteo_data(
+    api='historical-forecast',
+    start_date='2022-01-01',
+    end_date='2025-06-30',
+    include_pressure_levels=True,
+    variables=['temperature_2m', 'precipitation', 'pressure_msl',
+               'temperature_500hPa', 'temperature_850hPa',
+               'wind_speed_500hPa', 'geopotential_height_500hPa']
+)
+
+# 2. Coleta Historical Weather API (extensão temporal)
+historical_weather_data = collect_openmeteo_data(
+    api='historical-weather',
+    start_date='2000-01-01',
+    end_date='2021-12-31',
+    variables=['temperature_2m', 'precipitation', 'pressure_msl',
+               'relative_humidity_2m', 'wind_speed_10m']
+)
+
+# 3. INMET para validação (opcional)
+inmet_data = load_inmet_historical_data(
+    station='A801',
+    start_date='2000-01-01',
+    end_date='2024-12-31'
+)
+```
+
+#### 🌦️ Open-Meteo APIs - Especificações Técnicas
+
+**1. Historical Forecast API (Fonte Principal)**
+
+- **URL**: `https://historical-forecast-api.open-meteo.com/v1/forecast`
+- **Período**: 2022-01-01 até presente
+- **Resolução**: 2-25km (dependendo do modelo)
+- **Atualização**: Diária com delay de 2 dias
+- **Modelos**: ECMWF IFS, DWD ICON, Météo-France AROME
+- **Níveis de Pressão**: 19 níveis (1000hPa até 30hPa)
+- **Variáveis por Nível**: 6 (temperatura, umidade, vento, etc.)
+
+**2. Historical Weather API (Extensão Temporal)**
+
+- **URL**: `https://archive-api.open-meteo.com/v1/archive`
+- **Período**: 1940-01-01 até presente
+- **Resolução**: 25km (ERA5) + 11km (ERA5-Land)
+- **Atualização**: Diária com delay de 5 dias
+- **Modelo**: ERA5 Reanalysis (ECMWF)
+- **Níveis de Pressão**: Não disponível via API
+- **Variáveis**: 25+ variáveis de superfície
+
+#### 📍 Coordenadas Porto Alegre
+
+- **Latitude**: -30.0331
+- **Longitude**: -51.2300
+- **Timezone**: America/Sao_Paulo
+
+#### 🎯 Vantagens da Estratégia Híbrida
+
+1. **Dados Atmosféricos Completos**: Primeira vez com 500hPa e 850hPa para análise sinótica
+2. **Alta Resolução Espacial**: Até 2km vs 25km anterior
+3. **Múltiplos Modelos**: 15+ modelos meteorológicos combinados
+4. **Variáveis Avançadas**: CAPE, Lifted Index, wind shear vertical
+5. **Validação Robusta**: Comparação com dados INMET locais
+6. **Extensão Temporal**: 84+ anos para análise climática
+7. **Custo Zero**: Todas as APIs são gratuitas
+8. **Atualização Contínua**: Dados sempre atualizados
+
+#### ⚠️ Limitações e Mitigações
+
+**Limitações:**
+
+- Historical Forecast limitado a 2022+ (apenas 3 anos)
+- Possíveis inconsistências entre modelos meteorológicos
+- Resolução temporal horária (não sub-horária)
+
+**Mitigações:**
+
+- 3 anos é suficiente para LSTM com dados atmosféricos ricos
+- Validação cruzada temporal rigorosa
+- Ensemble de múltiplos modelos para robustez
+- Monitoramento contínuo de performance
+
+#### 📈 Próximos Passos
+
+1. **Implementação da Coleta**: Scripts para ambas APIs Open-Meteo
+2. **Feature Engineering**: Criação de variáveis atmosféricas derivadas
+3. **Modelo Híbrido**: Ensemble de LSTMs com diferentes fontes
+4. **Validação**: Comparação com dados INMET e métricas meteorológicas
+5. **Deploy**: Integração com sistema de alertas existente
+
+---
+
+### 📊 Dados Meteorológicos Históricos (Legacy INMET)
 
 #### Dataset Disponível
 
-O projeto utiliza dados meteorológicos históricos do Instituto Nacional de Meteorologia (INMET) cobrindo mais de **25 anos de observações** (2000-2025) de Porto Alegre:
+O projeto mantém acesso aos dados meteorológicos históricos do Instituto Nacional de Meteorologia (INMET) cobrindo mais de **25 anos de observações** (2000-2025) de Porto Alegre para **validação e calibração local**:
 
 **Período de Cobertura:**
 

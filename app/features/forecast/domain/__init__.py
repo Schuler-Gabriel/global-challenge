@@ -12,72 +12,65 @@ A Domain Layer contém:
 
 # Entities
 from .entities import (
-    WeatherData,
     Forecast,
     ModelMetrics,
+    PrecipitationLevel,
     WeatherCondition,
-    PrecipitationLevel
+    WeatherData,
+)
+
+# Repository Interfaces
+from .repositories import (  # Exceptions; Utilities
+    CacheError,
+    CacheRepository,
+    ConfigurableRepository,
+    ConnectionError,
+    DataNotFoundError,
+    DataValidationError,
+    ForecastQuery,
+    ForecastRepository,
+    HealthCheckRepository,
+    ModelNotFoundError,
+    ModelRepository,
+    RepositoryError,
+    WeatherDataQuery,
+    WeatherDataRepository,
+    create_cache_key,
+    validate_date_range,
+    validate_limit,
 )
 
 # Services
 from .services import (
+    ForecastConfiguration,
     ForecastService,
-    WeatherAnalysisService,
     ModelValidationService,
-    ForecastConfiguration
-)
-
-# Repository Interfaces
-from .repositories import (
-    WeatherDataRepository,
-    ForecastRepository,
-    ModelRepository,
-    CacheRepository,
-    WeatherDataQuery,
-    ForecastQuery,
-    ConfigurableRepository,
-    HealthCheckRepository,
-    # Exceptions
-    RepositoryError,
-    DataNotFoundError,
-    DataValidationError,
-    ConnectionError,
-    ModelNotFoundError,
-    CacheError,
-    # Utilities
-    create_cache_key,
-    validate_date_range,
-    validate_limit
+    WeatherAnalysisService,
 )
 
 __all__ = [
     # Entities
     "WeatherData",
-    "Forecast", 
+    "Forecast",
     "ModelMetrics",
     "WeatherCondition",
     "PrecipitationLevel",
-    
     # Services
     "ForecastService",
-    "WeatherAnalysisService", 
+    "WeatherAnalysisService",
     "ModelValidationService",
     "ForecastConfiguration",
-    
     # Repository Interfaces
     "WeatherDataRepository",
     "ForecastRepository",
     "ModelRepository",
     "CacheRepository",
-    
     # Query Objects
     "WeatherDataQuery",
     "ForecastQuery",
-    
     # Protocols
     "ConfigurableRepository",
     "HealthCheckRepository",
-    
     # Exceptions
     "RepositoryError",
     "DataNotFoundError",
@@ -85,9 +78,8 @@ __all__ = [
     "ConnectionError",
     "ModelNotFoundError",
     "CacheError",
-    
     # Utilities
     "create_cache_key",
     "validate_date_range",
-    "validate_limit"
+    "validate_limit",
 ]
