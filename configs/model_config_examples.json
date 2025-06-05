@@ -1,0 +1,73 @@
+{
+  "production_config": {
+    "sequence_length": 24,
+    "forecast_horizon": 24,
+    "lstm_units": [128, 64, 32],
+    "dropout_rate": 0.2,
+    "learning_rate": 0.001,
+    "batch_size": 32,
+    "epochs": 100,
+    "patience": 15,
+    "description": "Configuração para produção com 3 camadas LSTM"
+  },
+
+  "fast_experiment": {
+    "sequence_length": 12,
+    "forecast_horizon": 12,
+    "lstm_units": [64, 32],
+    "dropout_rate": 0.2,
+    "learning_rate": 0.001,
+    "batch_size": 64,
+    "epochs": 20,
+    "patience": 5,
+    "description": "Configuração rápida para experimentos"
+  },
+
+  "high_accuracy": {
+    "sequence_length": 48,
+    "forecast_horizon": 24,
+    "lstm_units": [256, 128, 64, 32],
+    "dropout_rate": 0.3,
+    "learning_rate": 0.0001,
+    "batch_size": 16,
+    "epochs": 200,
+    "patience": 25,
+    "description": "Configuração para máxima precisão (training longo)"
+  },
+
+  "memory_efficient": {
+    "sequence_length": 24,
+    "forecast_horizon": 24,
+    "lstm_units": [32, 16],
+    "dropout_rate": 0.1,
+    "learning_rate": 0.001,
+    "batch_size": 128,
+    "epochs": 50,
+    "patience": 10,
+    "description": "Configuração para ambientes com pouca memória"
+  },
+
+  "encoder_decoder": {
+    "sequence_length": 24,
+    "forecast_horizon": 24,
+    "lstm_units": [128, 64],
+    "dropout_rate": 0.2,
+    "learning_rate": 0.001,
+    "batch_size": 32,
+    "epochs": 100,
+    "patience": 15,
+    "model_type": "encoder_decoder",
+    "description": "Configuração para modelo encoder-decoder"
+  },
+
+  "grid_search_base": {
+    "sequence_length_options": [12, 24, 48],
+    "lstm_units_options": [[64], [128, 64], [256, 128, 64], [64, 32, 16]],
+    "dropout_rate_options": [0.1, 0.2, 0.3],
+    "learning_rate_options": [0.001, 0.0001, 0.01],
+    "batch_size_options": [16, 32, 64],
+    "epochs": 30,
+    "patience": 10,
+    "description": "Parâmetros para grid search automatizado"
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "A801_OLD_2020": {
+    "total_records": 8784,
+    "date_range": [
+      "2020-01-01T00:00:00",
+      "2020-12-31T23:00:00"
+    ],
+    "missing_data_count": "12932",
+    "missing_data_percentage": 6.40096618357488,
+    "validation": {
+      "precipitation": {
+        "total_values": 8784,
+        "non_null_values": "8151",
+        "null_percentage": 7.206284153005464,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 0.0,
+        "max_value": 25.0,
+        "expected_range": [
+          0,
+          200
+        ]
+      },
+      "temperature": {
+        "total_values": 8784,
+        "non_null_values": "896",
+        "null_percentage": 89.79963570127505,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 3.0,
+        "max_value": 37.0,
+        "expected_range": [
+          -10,
+          50
+        ]
+      },
+      "humidity": {
+        "total_values": 8784,
+        "non_null_values": "8780",
+        "null_percentage": 0.04553734061930783,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 18.0,
+        "max_value": 98.0,
+        "expected_range": [
+          0,
+          100
+        ]
+      },
+      "pressure": {
+        "total_values": 8784,
+        "non_null_values": "864",
+        "null_percentage": 90.1639344262295,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 995.0,
+        "max_value": 1025.0,
+        "expected_range": [
+          900,
+          1100
+        ]
+      },
+      "wind_speed": {
+        "total_values": 8784,
+        "non_null_values": "878",
+        "null_percentage": 90.00455373406193,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 1.0,
+        "max_value": 5.0,
+        "expected_range": [
+          0,
+          50
+        ]
+      }
+    }
+  },
+  "A801_NEW_2022": {
+    "total_records": 8760,
+    "date_range": [
+      "2022-01-01T00:00:00",
+      "2022-12-31T23:00:00"
+    ],
+    "missing_data_count": "13313",
+    "missing_data_percentage": 6.607603732380385,
+    "validation": {
+      "precipitation": {
+        "total_values": 8760,
+        "non_null_values": "8018",
+        "null_percentage": 8.470319634703197,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 0.0,
+        "max_value": 19.0,
+        "expected_range": [
+          0,
+          200
+        ]
+      },
+      "temperature": {
+        "total_values": 8760,
+        "non_null_values": "816",
+        "null_percentage": 90.68493150684932,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 5.0,
+        "max_value": 36.0,
+        "expected_range": [
+          -10,
+          50
+        ]
+      },
+      "humidity": {
+        "total_values": 8760,
+        "non_null_values": "8730",
+        "null_percentage": 0.3424657534246575,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 23.0,
+        "max_value": 98.0,
+        "expected_range": [
+          0,
+          100
+        ]
+      },
+      "pressure": {
+        "total_values": 8760,
+        "non_null_values": "876",
+        "null_percentage": 90.0,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 995.0,
+        "max_value": 1027.0,
+        "expected_range": [
+          900,
+          1100
+        ]
+      },
+      "wind_speed": {
+        "total_values": 8760,
+        "non_null_values": "886",
+        "null_percentage": 89.88584474885845,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 1.0,
+        "max_value": 4.0,
+        "expected_range": [
+          0,
+          50
+        ]
+      }
+    }
+  },
+  "A801_NEW_2024": {
+    "total_records": 8784,
+    "date_range": [
+      "2024-01-01T00:00:00",
+      "2024-12-31T23:00:00"
+    ],
+    "missing_data_count": "13267",
+    "missing_data_percentage": 6.566781499960403,
+    "validation": {
+      "precipitation": {
+        "total_values": 8784,
+        "non_null_values": "7956",
+        "null_percentage": 9.426229508196721,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 0.0,
+        "max_value": 40.0,
+        "expected_range": [
+          0,
+          200
+        ]
+      },
+      "temperature": {
+        "total_values": 8784,
+        "non_null_values": "851",
+        "null_percentage": 90.31193078324226,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 5.0,
+        "max_value": 36.0,
+        "expected_range": [
+          -10,
+          50
+        ]
+      },
+      "humidity": {
+        "total_values": 8784,
+        "non_null_values": "8764",
+        "null_percentage": 0.22768670309653918,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 28.0,
+        "max_value": 97.0,
+        "expected_range": [
+          0,
+          100
+        ]
+      },
+      "pressure": {
+        "total_values": 8784,
+        "non_null_values": "906",
+        "null_percentage": 89.68579234972678,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 991.0,
+        "max_value": 1027.0,
+        "expected_range": [
+          900,
+          1100
+        ]
+      },
+      "wind_speed": {
+        "total_values": 8784,
+        "non_null_values": "860",
+        "null_percentage": 90.20947176684882,
+        "out_of_range_count": "0",
+        "out_of_range_percentage": 0.0,
+        "min_value": 1.0,
+        "max_value": 5.0,
+        "expected_range": [
+          0,
+          50
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "file_name": "INMET_S_RS_A801_PORTO ALEGRE_01-01-2019_A_31-12-2019.CSV",
+  "validation_timestamp": "2025-06-03T22:34:50.987936",
+  "total_records": 8760,
+  "date_range": [
+    "2019-01-01 00:00",
+    "2019-12-31 23:00"
+  ],
+  "variable_results": [
+    {
+      "variable_name": "precipitation",
+      "total_records": 8760,
+      "valid_records": "8020",
+      "invalid_records": "0",
+      "missing_records": "740",
+      "out_of_range_count": "0",
+      "outlier_count": "43",
+      "validation_rate": 91.55251141552512,
+      "outlier_percentage": 0.5361596009975063,
+      "issues": [
+        "740 registros faltantes (8.4%)",
+        "43 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "temperature",
+      "total_records": 8760,
+      "valid_records": "835",
+      "invalid_records": "0",
+      "missing_records": "7925",
+      "out_of_range_count": "0",
+      "outlier_count": "1",
+      "validation_rate": 9.531963470319635,
+      "outlier_percentage": 0.11976047904191617,
+      "issues": [
+        "7925 registros faltantes (90.5%)",
+        "1 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "dew_point",
+      "total_records": 8760,
+      "valid_records": "911",
+      "invalid_records": "0",
+      "missing_records": "7849",
+      "out_of_range_count": "0",
+      "outlier_count": "7",
+      "validation_rate": 10.399543378995434,
+      "outlier_percentage": 0.7683863885839737,
+      "issues": [
+        "7849 registros faltantes (89.6%)",
+        "7 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "humidity",
+      "total_records": 8760,
+      "valid_records": "8757",
+      "invalid_records": "0",
+      "missing_records": "3",
+      "out_of_range_count": "0",
+      "outlier_count": "21",
+      "validation_rate": 99.96575342465754,
+      "outlier_percentage": 0.2398081534772182,
+      "issues": [
+        "3 registros faltantes (0.0%)",
+        "21 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "pressure",
+      "total_records": 8760,
+      "valid_records": "878",
+      "invalid_records": "0",
+      "missing_records": "7882",
+      "out_of_range_count": "0",
+      "outlier_count": "1",
+      "validation_rate": 10.02283105022831,
+      "outlier_percentage": 0.11389521640091116,
+      "issues": [
+        "7882 registros faltantes (90.0%)",
+        "1 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "wind_speed",
+      "total_records": 8760,
+      "valid_records": "1271",
+      "invalid_records": "0",
+      "missing_records": "7489",
+      "out_of_range_count": "0",
+      "outlier_count": "6",
+      "validation_rate": 14.509132420091325,
+      "outlier_percentage": 0.47206923682140045,
+      "issues": [
+        "7489 registros faltantes (85.5%)",
+        "6 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "wind_direction",
+      "total_records": 8760,
+      "valid_records": "8737",
+      "invalid_records": "0",
+      "missing_records": "23",
+      "out_of_range_count": "0",
+      "outlier_count": "0",
+      "validation_rate": 99.73744292237443,
+      "outlier_percentage": 0.0,
+      "issues": [
+        "23 registros faltantes (0.3%)"
+      ]
+    },
+    {
+      "variable_name": "wind_gust",
+      "total_records": 8760,
+      "valid_records": "1028",
+      "invalid_records": "0",
+      "missing_records": "7732",
+      "out_of_range_count": "0",
+      "outlier_count": "5",
+      "validation_rate": 11.735159817351597,
+      "outlier_percentage": 0.48638132295719844,
+      "issues": [
+        "7732 registros faltantes (88.3%)",
+        "5 outliers detectados (Z-score > 3)"
+      ]
+    }
+  ],
+  "quality_metrics": {
+    "completeness": 43.43179223744292,
+    "validity": 100.0,
+    "consistency": 100.0,
+    "accuracy": 99.72402010710648,
+    "overall_score": 82.97434169265418
+  },
+  "temporal_gaps": [],
+  "anomaly_periods": [],
+  "summary_statistics": {
+    "precipitation": {
+      "count": 8020,
+      "mean": 0.03254364089775561,
+      "std": 0.49571126251400177,
+      "min": 0.0,
+      "max": 25.0,
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "temperature": {
+      "count": 835,
+      "mean": 20.365269461077844,
+      "std": 5.787979855579892,
+      "min": 4.0,
+      "max": 38.0,
+      "median": 20.0,
+      "q25": 17.0,
+      "q75": 24.0
+    },
+    "dew_point": {
+      "count": 911,
+      "mean": 16.01756311745335,
+      "std": 4.771448853856431,
+      "min": 1.0,
+      "max": 25.0,
+      "median": 17.0,
+      "q25": 13.0,
+      "q75": 19.5
+    },
+    "humidity": {
+      "count": 8757,
+      "mean": 77.7235354573484,
+      "std": 16.748699107901395,
+      "min": 18.0,
+      "max": 100.0,
+      "median": 82.0,
+      "q25": 66.0,
+      "q75": 92.0
+    },
+    "pressure": {
+      "count": 878,
+      "mean": 1010.1526195899772,
+      "std": 5.456320696884988,
+      "min": 996.0,
+      "max": 1027.0,
+      "median": 1010.0,
+      "q25": 1006.0,
+      "q75": 1014.0
+    },
+    "wind_speed": {
+      "count": 1271,
+      "mean": 1.1125098347757671,
+      "std": 1.0472728339275916,
+      "min": 0.0,
+      "max": 5.0,
+      "median": 1.0,
+      "q25": 0.0,
+      "q75": 2.0
+    },
+    "wind_direction": {
+      "count": 8737,
+      "mean": 159.07496852466522,
+      "std": 85.91772401202579,
+      "min": 1.0,
+      "max": 360.0,
+      "median": 130.0,
+      "q25": 102.0,
+      "q75": 226.0
+    },
+    "wind_gust": {
+      "count": 1028,
+      "mean": 4.344357976653696,
+      "std": 2.807018827756824,
+      "min": 0.0,
+      "max": 17.0,
+      "median": 4.0,
+      "q25": 2.0,
+      "q75": 6.0
+    }
+  }
+}

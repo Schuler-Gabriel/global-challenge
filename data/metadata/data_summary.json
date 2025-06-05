@@ -1,0 +1,22 @@
+{
+  "last_updated": "20250603_223018",
+  "total_files": 30,
+  "valid_files": 11,
+  "corrupted_files": 19,
+  "total_records": 76488,
+  "years_available": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "stations": [
+    "A801_PORTO ALEGRE",
+    "A801_PORTO ALEGRE - JARDIM BOTANICO",
+    "B807_PORTO ALEGRE- BELEM NOVO"
+  ],
+  "missing_data_percentage": 63.33333333333333
+}

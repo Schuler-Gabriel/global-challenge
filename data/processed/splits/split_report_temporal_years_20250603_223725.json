@@ -1,0 +1,87 @@
+{
+  "split_strategy": "temporal_years",
+  "split_timestamp": "2025-06-03T22:37:25.070431",
+  "total_records": 55488,
+  "total_years": 7,
+  "date_range": [
+    "2019-01-01 00:00",
+    "2025-04-30 23:00"
+  ],
+  "train_stats": {
+    "split_name": "train",
+    "start_date": "2019-01-01 00:00",
+    "end_date": "2022-12-31 23:00",
+    "total_records": 35064,
+    "percentage": 63.19204152249135,
+    "years_covered": [
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "seasons_distribution": {
+      "Autumn": 8832,
+      "Winter": 8832,
+      "Spring": 8736,
+      "Summer": 8664
+    },
+    "missing_data_percentage": 7.6627845878359215
+  },
+  "validation_stats": {
+    "split_name": "validation",
+    "start_date": "2023-01-01 00:00",
+    "end_date": "2023-12-31 23:00",
+    "total_records": 8760,
+    "percentage": 15.787197231833911,
+    "years_covered": [
+      2023
+    ],
+    "seasons_distribution": {
+      "Autumn": 2208,
+      "Winter": 2208,
+      "Spring": 2184,
+      "Summer": 2160
+    },
+    "missing_data_percentage": 7.0983810709838115
+  },
+  "test_stats": {
+    "split_name": "test",
+    "start_date": "2024-01-01 00:00",
+    "end_date": "2025-04-30 23:00",
+    "total_records": 11664,
+    "percentage": 21.02076124567474,
+    "years_covered": [
+      2024,
+      2025
+    ],
+    "seasons_distribution": {
+      "Autumn": 3672,
+      "Summer": 3600,
+      "Winter": 2208,
+      "Spring": 2184
+    },
+    "missing_data_percentage": 7.18346011555888
+  },
+  "seasonal_balance": {
+    "train": 0.9999764896507035,
+    "validation": 0.9999701750450015,
+    "test": 0.9777558858340795
+  },
+  "decade_distribution": {
+    "train": {
+      "2020": 26304,
+      "2010": 8760
+    },
+    "validation": {
+      "2020": 8760
+    },
+    "test": {
+      "2020": 11664
+    }
+  },
+  "output_files": [
+    "data/processed/splits/temporal_years_train_20250603_223724.csv",
+    "data/processed/splits/temporal_years_validation_20250603_223724.csv",
+    "data/processed/splits/temporal_years_test_20250603_223724.csv"
+  ]
+}

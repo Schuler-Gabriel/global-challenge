@@ -1,0 +1,50 @@
+{
+  "workbench.colorTheme": "Default Dark+",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "python.defaultInterpreterPath": "./venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length=88"],
+  "python.sortImports.args": ["--profile", "black"],
+  "files.associations": {
+    "*.py": "python",
+    "*.ipynb": "jupyter-notebook",
+    "requirements*.txt": "pip-requirements"
+  },
+  "jupyter.askForKernelRestart": false,
+  "jupyter.runStartupCommands": [
+    "import pandas as pd",
+    "import numpy as np",
+    "import tensorflow as tf",
+    "import matplotlib.pyplot as plt",
+    "import seaborn as sns"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests", "-v"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/venv": true,
+    "**/env": true,
+    "**/.pytest_cache": true,
+    "**/data/dados_historicos/*.csv": false
+  },
+  "search.exclude": {
+    "**/venv": true,
+    "**/env": true,
+    "**/__pycache__": true,
+    "**/data/modelos_treinados": true
+  },
+  "emmet.includeLanguages": {
+    "jinja-html": "html"
+  },
+  "cursor.cpp.disabledLanguages": ["python"],
+  "cursor.general.enableComments": true,
+  "cursor.prediction.enablePartialAccepts": true
+}

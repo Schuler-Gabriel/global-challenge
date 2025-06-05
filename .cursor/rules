@@ -1,0 +1,221 @@
+# Regras do Cursor para Projeto de Previsões Meteorológicas
+
+# Projeto: Sistema de Alertas de Cheias - Rio Guaíba
+
+# Arquitetura: Clean Architecture organizada por Features
+
+## Configurações Gerais do Projeto
+
+### Stack Tecnológica
+
+- Python 3.9+
+- TensorFlow 2.x para modelos LSTM
+- FastAPI para APIs REST
+- Pandas/NumPy para manipulação de dados
+- httpx para requisições HTTP assíncronas
+- Pydantic para validação de dados
+- Docker para containerização
+- pytest para testes
+
+### Arquitetura Clean Architecture por Features
+
+```
+projeto_alerta_cheias/
+├── app/
+│   ├── core/                       # Lógica de domínio compartilhada
+│   │   ├── __init__.py
+│   │   ├── config.py              # Configurações globais
+│   │   ├── exceptions.py          # Exceções customizadas
+│   │   └── dependencies.py        # Injeção de dependências
+│   ├── features/
+│   │   ├── forecast/
+│   │   │   ├── domain/
+│   │   │   │   ├── entities.py    # Entidades de domínio
+│   │   │   │   └── services.py    # Serviços de domínio
+│   │   │   ├── infra/
+│   │   │   │   ├── model_loader.py # Carregamento do modelo
+│   │   │   │   └── forecast_model.py # Modelo TensorFlow
+│   │   │   ├── presentation/
+│   │   │   │   └── routes.py      # Endpoints FastAPI
+│   │   │   └── application/
+│   │   │       └── usecases.py    # Casos de uso
+│   │   ├── alerts/
+│   │   │   ├── domain/
+│   │   │   │   ├── entities.py    # Entidades de alerta
+│   │   │   │   └── alert_rules.py # Regras de negócio
+│   │   │   ├── infra/
+│   │   │   │   └── external_api.py # APIs externas
+│   │   │   ├── presentation/
+│   │   │   │   └── routes.py      # Endpoints de alerta
+│   │   │   └── application/
+│   │   │       └── usecases.py    # Casos de uso de alerta
+│   ├── main.py                    # Inicialização da aplicação
+│   └── config.py                  # Configurações globais
+├── data/
+│   ├── dados_historicos/          # CSVs 2000-2025
+│   └── modelos_treinados/         # Modelos salvos
+├── notebooks/
+│   └── treinamento_modelo.ipynb   # Jupyter notebook
+├── tests/
+│   ├── unit/                      # Testes unitários
+│   │   ├── test_forecast.py
+│   │   └── test_alerts.py
+│   └── integration/               # Testes de integração
+├── requirements.txt
+├── Dockerfile
+└── README.md
+```
+
+## Regras de Desenvolvimento
+
+### Clean Architecture
+
+- Separação clara entre camadas: Domain, Application, Infrastructure, Presentation
+- Domain não deve depender de Infrastructure
+- Use injeção de dependências para inversão de controle
+- Entities representam conceitos de negócio puros
+- Use Cases encapsulam regras de aplicação
+- Services contêm lógica de domínio
+
+### Features Organization
+
+- Cada feature é uma pasta completa com suas 4 camadas
+- Features: forecast (previsão) e alerts (alertas)
+- Shared logic vai em app/core/
+- Evite dependências entre features
+
+### APIs Externas Específicas
+
+```python
+# API do Nível do Guaíba
+GUAIBA_API_URL = "https://nivelguaiba.com.br/portoalegre.1day.json"
+# Retorna: {"2025-06-03 19:15": 1.93, "2025-06-03 19:00": 1.94, ...}
+
+# API Meteorológica CPTEC
+CPTEC_API_URL = "https://www.cptec.inpe.br/api/forecast-input?city=Porto%20Alegre%2C%20RS"
+# Retorna: {"probabilidade_chuva": 37, "precipitacao_acumulada": "0", ...}
+```
+
+### Matriz de Alertas Atualizada
+
+```python
+def classify_alert_level(river_level: float, rain_prediction: float) -> AlertLevel:
+    """
+    Matriz de classificação de alertas atualizada
+    """
+    if river_level > 3.60:
+        return AlertLevel(nivel="Crítico", acao="Emergência")
+    elif river_level > 3.15 and rain_prediction > 50:
+        return AlertLevel(nivel="Alto", acao="Alerta")
+    elif river_level > 2.80 and rain_prediction > 20:
+        return AlertLevel(nivel="Moderado", acao="Atenção")
+    else:
+        return AlertLevel(nivel="Baixo", acao="Monitoramento")
+```
+
+### Códigos Python
+
+- Use type hints em todas as funções
+- Docstrings em formato Google Style
+- Máximo 88 caracteres por linha (Black formatter)
+- Use f-strings para formatação de strings
+- Imports organizados: stdlib, third-party, local
+- Use async/await para operações I/O bound
+- Prefixe classes de domínio sem sufixos técnicos
+
+### Domain Layer
+
+- Entities são classes puras sem dependências externas
+- Services contêm lógica de negócio complexa
+- Value Objects para conceitos simples
+- Domain Events para comunicação entre bounded contexts
+- Repositories são interfaces (abstrações)
+
+### Application Layer
+
+- Use Cases são a interface principal da aplicação
+- Um Use Case por operação de negócio
+- Coordenam entre Domain e Infrastructure
+- Não contêm lógica de negócio
+- Devem ser testáveis isoladamente
+
+### Infrastructure Layer
+
+- Implementações concretas de repositories
+- Integrações com APIs externas
+- Persistência de dados
+- Carregamento de modelos ML
+- Configurações de ambiente
+
+### Presentation Layer
+
+- Controllers/Routes do FastAPI
+- DTOs (Data Transfer Objects) com Pydantic
+- Validação de entrada
+- Serialização de resposta
+- Tratamento de exceções HTTP
+
+### Modelos de ML
+
+- Use TensorFlow/Keras para modelos LSTM
+- Salve modelos em formato SavedModel
+- Pipeline de pré-processamento separado
+- Versionamento de modelos
+- Métricas de validação (MAE, RMSE, Accuracy > 75%)
+
+### APIs Externas
+
+- Use httpx para requisições assíncronas
+- Timeout de 10 segundos
+- Retry logic para falhas temporárias
+- Cache de respostas quando apropriado
+- Circuit breaker pattern para alta disponibilidade
+
+### Testes
+
+- Testes unitários para cada camada
+- Mocks para dependências externas
+- Testes de integração para APIs
+- Fixtures para setup de dados
+- Cobertura mínima: 80%
+- Separar unit/ e integration/
+
+### Configurações
+
+- Use variáveis de ambiente para URLs de APIs
+- Configurações centralizadas em config.py
+- Diferentes configs para dev/test/prod
+- Validação de configurações na inicialização
+
+### Logging
+
+- Structured logging com JSON
+- Logs por feature e camada
+- Request ID para rastreamento
+- Levels: DEBUG (dev), INFO (prod)
+- Rotate logs por tamanho/data
+
+### Performance
+
+- Cache de previsões por TTL
+- Connection pooling para APIs externas
+- Async/await para I/O concorrente
+- Monitoramento de métricas
+- Health checks por feature
+
+### Segurança
+
+- Validação rigorosa de entrada
+- Rate limiting por endpoint
+- CORS configurado adequadamente
+- Headers de segurança
+- Logs de auditoria para operações críticas
+
+### Docker
+
+- Multi-stage build otimizado
+- Imagem Python slim
+- Usuário não-root
+- Health checks implementados
+- Volumes para dados e modelos
+- Variáveis de ambiente configuráveis

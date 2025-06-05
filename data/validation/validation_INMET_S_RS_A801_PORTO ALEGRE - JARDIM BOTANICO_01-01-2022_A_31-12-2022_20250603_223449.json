@@ -1,0 +1,244 @@
+{
+  "file_name": "INMET_S_RS_A801_PORTO ALEGRE - JARDIM BOTANICO_01-01-2022_A_31-12-2022.CSV",
+  "validation_timestamp": "2025-06-03T22:34:49.706052",
+  "total_records": 8760,
+  "date_range": [
+    "2022-01-01 00:00",
+    "2022-12-31 23:00"
+  ],
+  "variable_results": [
+    {
+      "variable_name": "precipitation",
+      "total_records": 8760,
+      "valid_records": "8018",
+      "invalid_records": "0",
+      "missing_records": "742",
+      "out_of_range_count": "0",
+      "outlier_count": "49",
+      "validation_rate": 91.52968036529681,
+      "outlier_percentage": 0.6111249688201547,
+      "issues": [
+        "742 registros faltantes (8.5%)",
+        "49 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "temperature",
+      "total_records": 8760,
+      "valid_records": "816",
+      "invalid_records": "0",
+      "missing_records": "7944",
+      "out_of_range_count": "0",
+      "outlier_count": "0",
+      "validation_rate": 9.315068493150685,
+      "outlier_percentage": 0.0,
+      "issues": [
+        "7944 registros faltantes (90.7%)"
+      ]
+    },
+    {
+      "variable_name": "dew_point",
+      "total_records": 8760,
+      "valid_records": "841",
+      "invalid_records": "0",
+      "missing_records": "7919",
+      "out_of_range_count": "0",
+      "outlier_count": "4",
+      "validation_rate": 9.600456621004566,
+      "outlier_percentage": 0.47562425683709864,
+      "issues": [
+        "7919 registros faltantes (90.4%)",
+        "4 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "humidity",
+      "total_records": 8760,
+      "valid_records": "8730",
+      "invalid_records": "0",
+      "missing_records": "30",
+      "out_of_range_count": "0",
+      "outlier_count": "22",
+      "validation_rate": 99.65753424657534,
+      "outlier_percentage": 0.2520045819014891,
+      "issues": [
+        "30 registros faltantes (0.3%)",
+        "22 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "pressure",
+      "total_records": 8760,
+      "valid_records": "876",
+      "invalid_records": "0",
+      "missing_records": "7884",
+      "out_of_range_count": "0",
+      "outlier_count": "5",
+      "validation_rate": 10.0,
+      "outlier_percentage": 0.5707762557077625,
+      "issues": [
+        "7884 registros faltantes (90.0%)",
+        "5 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "wind_speed",
+      "total_records": 8760,
+      "valid_records": "886",
+      "invalid_records": "0",
+      "missing_records": "7874",
+      "out_of_range_count": "0",
+      "outlier_count": "5",
+      "validation_rate": 10.114155251141552,
+      "outlier_percentage": 0.5643340857787811,
+      "issues": [
+        "7874 registros faltantes (89.9%)",
+        "5 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "wind_direction",
+      "total_records": 8760,
+      "valid_records": "8728",
+      "invalid_records": "0",
+      "missing_records": "32",
+      "out_of_range_count": "0",
+      "outlier_count": "0",
+      "validation_rate": 99.63470319634703,
+      "outlier_percentage": 0.0,
+      "issues": [
+        "32 registros faltantes (0.4%)"
+      ]
+    },
+    {
+      "variable_name": "wind_gust",
+      "total_records": 8760,
+      "valid_records": "961",
+      "invalid_records": "0",
+      "missing_records": "7799",
+      "out_of_range_count": "0",
+      "outlier_count": "5",
+      "validation_rate": 10.970319634703197,
+      "outlier_percentage": 0.5202913631633715,
+      "issues": [
+        "7799 registros faltantes (89.0%)",
+        "5 outliers detectados (Z-score > 3)"
+      ]
+    },
+    {
+      "variable_name": "radiation",
+      "total_records": 8760,
+      "valid_records": "474",
+      "invalid_records": "0",
+      "missing_records": "8286",
+      "out_of_range_count": "0",
+      "outlier_count": "0",
+      "validation_rate": 5.410958904109589,
+      "outlier_percentage": 0.0,
+      "issues": [
+        "8286 registros faltantes (94.6%)"
+      ]
+    }
+  ],
+  "quality_metrics": {
+    "completeness": 38.4703196347032,
+    "validity": 100.0,
+    "consistency": 100.0,
+    "accuracy": 99.70326409495549,
+    "overall_score": 81.48174870940205
+  },
+  "temporal_gaps": [],
+  "anomaly_periods": [],
+  "summary_statistics": {
+    "precipitation": {
+      "count": 8018,
+      "mean": 0.03354951359441257,
+      "std": 0.4777675597954021,
+      "min": 0.0,
+      "max": 19.0,
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "temperature": {
+      "count": 816,
+      "mean": 19.61642156862745,
+      "std": 5.953288512379724,
+      "min": 5.0,
+      "max": 36.0,
+      "median": 19.0,
+      "q25": 15.0,
+      "q75": 23.0
+    },
+    "dew_point": {
+      "count": 841,
+      "mean": 15.272294887039239,
+      "std": 4.4441835276261745,
+      "min": 1.0,
+      "max": 25.0,
+      "median": 15.0,
+      "q25": 13.0,
+      "q75": 18.0
+    },
+    "humidity": {
+      "count": 8730,
+      "mean": 76.74398625429554,
+      "std": 15.87674778789979,
+      "min": 23.0,
+      "max": 98.0,
+      "median": 80.0,
+      "q25": 65.0,
+      "q75": 90.0
+    },
+    "pressure": {
+      "count": 876,
+      "mean": 1009.5148401826484,
+      "std": 5.6216730684659115,
+      "min": 995.0,
+      "max": 1027.0,
+      "median": 1009.0,
+      "q25": 1006.0,
+      "q75": 1013.0
+    },
+    "wind_speed": {
+      "count": 886,
+      "mean": 1.4887133182844243,
+      "std": 0.6851014467193884,
+      "min": 1.0,
+      "max": 4.0,
+      "median": 1.0,
+      "q25": 1.0,
+      "q75": 2.0
+    },
+    "wind_direction": {
+      "count": 8728,
+      "mean": 159.39058203483043,
+      "std": 82.47762943181081,
+      "min": 1.0,
+      "max": 360.0,
+      "median": 132.0,
+      "q25": 104.0,
+      "q75": 220.0
+    },
+    "wind_gust": {
+      "count": 961,
+      "mean": 4.8002081165452655,
+      "std": 2.6613827778009913,
+      "min": 1.0,
+      "max": 14.0,
+      "median": 4.0,
+      "q25": 3.0,
+      "q75": 6.0
+    },
+    "radiation": {
+      "count": 474,
+      "mean": 1210.386075949367,
+      "std": 1059.4645964731044,
+      "min": 0.0,
+      "max": 3899.0,
+      "median": 964.0,
+      "q25": 276.0,
+      "q75": 1987.0
+    }
+  }
+}
