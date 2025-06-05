@@ -1,0 +1,645 @@
+{
+  "timestamp": "2025-06-03T22:18:07.553907",
+  "config": {
+    "raw_data_path": "data/raw/dados_historicos",
+    "processed_data_path": "data/processed",
+    "max_gap_hours": 6,
+    "imputation_method": "knn",
+    "scaling_method": "standard",
+    "create_derived_features": true,
+    "temporal_aggregations": [
+      "3H",
+      "6H",
+      "12H",
+      "24H"
+    ],
+    "min_data_coverage": 0.7
+  },
+  "original_files": 30,
+  "total_original_rows": 236688,
+  "processed_rows": 215688,
+  "processed_columns": 56,
+  "stations": [
+    "A801_PORTO_ALEGRE",
+    "A801_JARDIM_BOTANICO",
+    "B807_BELEM_NOVO"
+  ],
+  "date_range": {
+    "start": "2000-09-22T00:00:00",
+    "end": "2025-04-30T23:00:00"
+  },
+  "preprocessing_stats": {
+    "missing_values": {
+      "umidade_relativa": {
+        "count": "3",
+        "percentage": 0.03424657534246575
+      },
+      "vento_direcao_graus": {
+        "count": 23,
+        "percentage": 0.2625570776255708
+      }
+    }
+  },
+  "feature_columns": [],
+  "data_quality": {
+    "precipitacao_mm": {
+      "missing_pct": 10.770650198434776,
+      "mean": 0.033825737697251855,
+      "std": 0.4834834622829108,
+      "min": 0.0,
+      "max": 40.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "pressao_mb": {
+      "missing_pct": 90.37637698898409,
+      "mean": 1010.0115623645036,
+      "std": 5.580717052928481,
+      "min": 989.0,
+      "max": 1032.0,
+      "q25": 1006.0,
+      "q75": 1014.0
+    },
+    "temperatura_c": {
+      "missing_pct": 90.33186825414488,
+      "mean": 19.9549705078406,
+      "std": 5.726706031010166,
+      "min": 1.0,
+      "max": 39.0,
+      "q25": 16.0,
+      "q75": 24.0
+    },
+    "umidade_relativa": {
+      "missing_pct": 0.0941174288787508,
+      "mean": -242.49502285541917,
+      "std": 1770.0453527251927,
+      "min": -9999.0,
+      "max": 100.0,
+      "q25": 67.0,
+      "q75": 90.0
+    },
+    "vento_direcao_graus": {
+      "missing_pct": 0.33057008271206556,
+      "mean": -197.8310268635888,
+      "std": 1868.1990897427502,
+      "min": -9999.0,
+      "max": 360.0,
+      "q25": 96.0,
+      "q75": 218.0
+    },
+    "vento_velocidade_ms": {
+      "missing_pct": 87.7276436333964,
+      "mean": 1.2408386853041178,
+      "std": 1.1464530760915208,
+      "min": 0.0,
+      "max": 9.0,
+      "q25": 0.0,
+      "q75": 2.0
+    },
+    "hora": {
+      "missing_pct": 0.0,
+      "mean": 11.5,
+      "std": 6.9222025992461615,
+      "min": 0.0,
+      "max": 23.0,
+      "q25": 5.75,
+      "q75": 17.25
+    },
+    "dia_semana": {
+      "missing_pct": 0.0,
+      "mean": 3.0,
+      "std": 2.0001159053425224,
+      "min": 0.0,
+      "max": 6.0,
+      "q25": 1.0,
+      "q75": 5.0
+    },
+    "mes": {
+      "missing_pct": 0.0,
+      "mean": 6.51752531434294,
+      "std": 3.471649824361196,
+      "min": 1.0,
+      "max": 12.0,
+      "q25": 3.0,
+      "q75": 10.0
+    },
+    "ano": {
+      "missing_pct": 0.0,
+      "mean": 2012.5274285078447,
+      "std": 7.11202149301952,
+      "min": 2000.0,
+      "max": 2025.0,
+      "q25": 2006.0,
+      "q75": 2019.0
+    },
+    "hora_sin": {
+      "missing_pct": 0.0,
+      "mean": -1.8538719101155205e-17,
+      "std": 0.7071084203812175,
+      "min": -1.0,
+      "max": 1.0,
+      "q25": -0.7071067811865472,
+      "q75": 0.7071067811865475
+    },
+    "hora_cos": {
+      "missing_pct": 0.0,
+      "mean": -5.553791748495786e-17,
+      "std": 0.7071084203812175,
+      "min": -1.0,
+      "max": 1.0,
+      "q25": -0.7071067811865476,
+      "q75": 0.7071067811865475
+    },
+    "mes_sin": {
+      "missing_pct": 0.0,
+      "mean": 0.0004384554981173294,
+      "std": 0.7067147686053692,
+      "min": -1.0,
+      "max": 1.0,
+      "q25": -0.8660254037844384,
+      "q75": 0.49999999999999994
+    },
+    "mes_cos": {
+      "missing_pct": 0.0,
+      "mean": 0.00896216089240273,
+      "std": 0.7074449513840151,
+      "min": -1.0,
+      "max": 1.0,
+      "q25": -0.5000000000000004,
+      "q75": 0.8660254037844384
+    },
+    "indice_calor": {
+      "missing_pct": 90.33279551945402,
+      "mean": 23.217906575224205,
+      "std": 29.175821967688655,
+      "min": -1717.8249999999998,
+      "max": 954.905,
+      "q25": 17.335,
+      "q75": 30.82
+    },
+    "vento_u": {
+      "missing_pct": 87.7276436333964,
+      "mean": -0.40057057367298793,
+      "std": 1.3155844796370197,
+      "min": -6.9904067432820165,
+      "max": 6.947823061489254,
+      "q25": -0.9961946980917455,
+      "q75": -0.0
+    },
+    "vento_v": {
+      "missing_pct": 87.7276436333964,
+      "mean": 0.29478145099969144,
+      "std": 0.9359320014932414,
+      "min": -5.143003804212673,
+      "max": 8.402223838474814,
+      "q25": 0.0,
+      "q75": 0.7193398003386513
+    },
+    "precipitacao_sum_3h": {
+      "missing_pct": 5.0197507510849,
+      "mean": 0.0953329330619298,
+      "std": 0.8757645376577116,
+      "min": 0.0,
+      "max": 43.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_max_3h": {
+      "missing_pct": 5.0197507510849,
+      "mean": 0.08771313231898702,
+      "std": 0.7892079438190757,
+      "min": 0.0,
+      "max": 40.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_sum_6h": {
+      "missing_pct": 2.636215273914172,
+      "mean": 0.18599822858829915,
+      "std": 1.2969914399331022,
+      "min": 0.0,
+      "max": 43.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_max_6h": {
+      "missing_pct": 2.636215273914172,
+      "mean": 0.1587365834611099,
+      "std": 1.0765251795959547,
+      "min": 0.0,
+      "max": 40.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_sum_12h": {
+      "missing_pct": 1.5174696784243906,
+      "mean": 0.36777063766683143,
+      "std": 1.93258980093929,
+      "min": 0.0,
+      "max": 43.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_max_12h": {
+      "missing_pct": 1.5174696784243906,
+      "mean": 0.28890615069557235,
+      "std": 1.4720658032427676,
+      "min": 0.0,
+      "max": 40.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_sum_24h": {
+      "missing_pct": 1.007937391046326,
+      "mean": 0.7317552947347715,
+      "std": 2.8636557643907925,
+      "min": 0.0,
+      "max": 45.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "precipitacao_max_24h": {
+      "missing_pct": 1.007937391046326,
+      "mean": 0.5308036007006567,
+      "std": 2.014161997265187,
+      "min": 0.0,
+      "max": 40.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "temperatura_mean_6h": {
+      "missing_pct": 54.77356181150551,
+      "mean": 19.9610608794303,
+      "std": 5.694030008470455,
+      "min": 1.0,
+      "max": 39.0,
+      "q25": 16.0,
+      "q75": 24.0
+    },
+    "temperatura_std_6h": {
+      "missing_pct": 88.93494306591002,
+      "mean": 1.0972770107751944,
+      "std": 1.2097654331250367,
+      "min": 0.0,
+      "max": 10.606601717798213,
+      "q25": 0.0,
+      "q75": 1.4142135623730951
+    },
+    "temperatura_mean_12h": {
+      "missing_pct": 30.39204777270873,
+      "mean": 19.977916958465595,
+      "std": 5.561577559694847,
+      "min": 1.0,
+      "max": 39.0,
+      "q25": 16.0,
+      "q75": 24.0
+    },
+    "temperatura_std_12h": {
+      "missing_pct": 67.20355328066466,
+      "mean": 1.858351123974275,
+      "std": 1.752144854045643,
+      "min": 0.0,
+      "max": 12.727922061357855,
+      "q25": 0.7071067811865476,
+      "q75": 2.8284271247461903
+    },
+    "temperatura_mean_24h": {
+      "missing_pct": 9.830866807610994,
+      "mean": 19.975628410938775,
+      "std": 5.267237358925393,
+      "min": 1.0,
+      "max": 39.0,
+      "q25": 16.4,
+      "q75": 23.8
+    },
+    "temperatura_std_24h": {
+      "missing_pct": 31.817718185527244,
+      "mean": 2.5798100913338153,
+      "std": 1.840534270992272,
+      "min": 0.0,
+      "max": 12.727922061357855,
+      "q25": 1.095445115010335,
+      "q75": 3.696845502136472
+    },
+    "pressao_trend_3h": {
+      "missing_pct": 97.45372946107341,
+      "mean": -0.01341344986647244,
+      "std": 1.1989266100744849,
+      "min": -6.0,
+      "max": 7.0,
+      "q25": 0.0,
+      "q75": 0.0
+    },
+    "pressao_trend_6h": {
+      "missing_pct": 95.05396684099254,
+      "mean": -0.014818460192475943,
+      "std": 1.1949778616302367,
+      "min": -6.0,
+      "max": 7.0,
+      "q25": 0.0,
+      "q75": 0.0
+    }
+  },
+  "station_metadata": {
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2020_A_31-12-2020": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05361111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2006_A_31-12-2006": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2002_A_31-12-2002": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2012_A_31-12-2012": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2016_A_31-12-2016": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE - JARDIM BOTANICO_01-01-2022_A_31-12-2022": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE - JARDIM BOTANICO",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05361111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2021_A_31-12-2021": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05361111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE - JARDIM BOTANICO_01-01-2025_A_30-04-2025": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE - JARDIM BOTANICO",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05351111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_B807_PORTO ALEGRE- BELEM NOVO_01-01-2023_A_31-12-2023": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE- BELEM NOVO",
+      "CODIGO (WMO)": "B807",
+      "LATITUDE": "-30,1861111",
+      "LONGITUDE": "-51,17805554",
+      "ALTITUDE": "3,3",
+      "DATA DE FUNDACAO": "08/12/22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2007_A_31-12-2007": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2003_A_31-12-2003": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2013_A_31-12-2013": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_B807_PORTO ALEGRE- BELEM NOVO_01-01-2025_A_30-04-2025": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE- BELEM NOVO",
+      "CODIGO (WMO)": "B807",
+      "LATITUDE": "-30,1861111",
+      "LONGITUDE": "-51,17805554",
+      "ALTITUDE": "3,3",
+      "DATA DE FUNDACAO": "08/12/22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2017_A_31-12-2017": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE - JARDIM BOTANICO_01-01-2023_A_31-12-2023": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE - JARDIM BOTANICO",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05361111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_22-09-2000_A_31-12-2000": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2008_A_31-12-2008": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2004_A_31-12-2004": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_B807_PORTO ALEGRE- BELEM NOVO_01-01-2024_A_31-12-2024": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE- BELEM NOVO",
+      "CODIGO (WMO)": "B807",
+      "LATITUDE": "-30,1861111",
+      "LONGITUDE": "-51,17805554",
+      "ALTITUDE": "3,3",
+      "DATA DE FUNDACAO": "08/12/22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2010_A_31-12-2010": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2014_A_31-12-2014": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE - JARDIM BOTANICO_01-01-2024_A_31-12-2024": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE - JARDIM BOTANICO",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05361111",
+      "LONGITUDE": "-51,17472221",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDACAO": "22/09/00"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2018_A_31-12-2018": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_B807_PORTO ALEGRE- BELEM NOVO_08-12-2022_A_31-12-2022": {
+      "REGIAO": "S",
+      "UF": "RS",
+      "ESTACAO": "PORTO ALEGRE- BELEM NOVO",
+      "CODIGO (WMO)": "B807",
+      "LATITUDE": "-30,1861111",
+      "LONGITUDE": "-51,17805554",
+      "ALTITUDE": "3,3",
+      "DATA DE FUNDACAO": "08/12/22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2009_A_31-12-2009": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2005_A_31-12-2005": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2001_A_31-12-2001": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2011_A_31-12-2011": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2015_A_31-12-2015": {
+      "REGIÃO": "S",
+      "UF": "RS",
+      "ESTAÇÃO": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,05",
+      "LONGITUDE": "-51,16666666",
+      "ALTITUDE": "46,97",
+      "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2000-09-22"
+    },
+    "INMET_S_RS_A801_PORTO ALEGRE_01-01-2019_A_31-12-2019": {
+      "REGI?O": "S",
+      "UF": "RS",
+      "ESTAC?O": "PORTO ALEGRE",
+      "CODIGO (WMO)": "A801",
+      "LATITUDE": "-30,053536",
+      "LONGITUDE": "-51,174766",
+      "ALTITUDE": "41,18",
+      "DATA DE FUNDAC?O": "22/09/00"
+    }
+  }
+}
