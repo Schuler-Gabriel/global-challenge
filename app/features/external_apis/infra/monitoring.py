@@ -538,7 +538,7 @@ class ApiMonitoringService(MonitoringService):
         return {
             'active_alerts': alerts,
             'alert_count': len(alerts)
-        }
+        } 
     
     async def get_all_metrics(self) -> Dict[str, Any]:
         """

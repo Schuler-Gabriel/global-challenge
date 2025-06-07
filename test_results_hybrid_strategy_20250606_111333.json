@@ -1,0 +1,56 @@
+{
+  "api_connectivity": {
+    "forecast": {
+      "status": "FAILED",
+      "url": "https://api.open-meteo.com/v1/forecast",
+      "description": "149 variáveis atmosféricas + níveis de pressão"
+    },
+    "historical": {
+      "status": "FAILED",
+      "url": "https://archive-api.open-meteo.com/v1/archive",
+      "description": "25 variáveis de superfície (2000-2024)"
+    },
+    "overall": "PARTIAL"
+  },
+  "current_data": {
+    "status": "POOR_QUALITY",
+    "quality_score": 0.5,
+    "timestamp": "2025-06-06T11:00",
+    "location": {
+      "latitude": -30.0,
+      "longitude": -51.25,
+      "elevation": 38.0,
+      "timezone": "America/Sao_Paulo"
+    },
+    "synoptic_analysis": false,
+    "pressure_levels": false,
+    "variables_count": 10
+  },
+  "historical_data": {
+    "status": "INSUFFICIENT_DATA",
+    "period": {
+      "start": "2025-05-06",
+      "end": "2025-06-05",
+      "days_requested": 30,
+      "records_received": 0
+    },
+    "quality_score": 0.0,
+    "variables_count": 0,
+    "data_completeness": 0
+  },
+  "model_performance": {
+    "status": "FAILED",
+    "error": "Dependências ML não disponíveis: No module named 'tensorflow'"
+  },
+  "predictions": {
+    "status": "FAILED",
+    "error": "Dependências ML não disponíveis: No module named 'tensorflow'"
+  },
+  "overall_status": "FAILED",
+  "summary": {
+    "success_rate": 0.0,
+    "tests_passed": 0,
+    "total_tests": 5,
+    "status": "FAILED"
+  }
+}

@@ -416,7 +416,7 @@ class CircuitBreakerState:
             'availability': self.get_availability(),
             'should_allow_call': self.should_allow_call(),
             'time_until_retry': self.time_until_retry()
-        }
+        } 
 
 
 @dataclass

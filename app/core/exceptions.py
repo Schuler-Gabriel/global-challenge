@@ -69,6 +69,9 @@ class ModelError(BaseApplicationException):
     """Base class for ML model-related errors."""
     pass
 
+# Alias for compatibility
+ModelException = ModelError
+
 
 class ModelNotFoundError(ModelError):
     """Raised when ML model files are not found."""
@@ -121,6 +124,8 @@ class ExternalAPIError(BaseApplicationException):
     """Base class for external API-related errors."""
     pass
 
+# Alias for compatibility
+ExternalApiException = ExternalAPIError
 
 class APITimeoutError(ExternalAPIError):
     """Raised when external API calls timeout."""
@@ -192,6 +197,9 @@ class DataValidationError(DataProcessingError):
             error_code="DATA_VALIDATION_ERROR",
             context=context
         )
+
+# Alias for compatibility
+DataValidationException = DataValidationError
 
 
 class DataNotFoundError(DataProcessingError):

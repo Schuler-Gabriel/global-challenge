@@ -507,7 +507,7 @@ async def clear_cache():
     """
     try:
         # Implementação simplificada
-        return {"message": "Cache limpo com sucesso", "timestamp": datetime.now()}
+            return {"message": "Cache limpo com sucesso", "timestamp": datetime.now()}
     
     except Exception as e:
         logger.error(f"Erro ao limpar cache: {e}")
@@ -614,7 +614,7 @@ async def _cleanup_old_metrics(monitoring_use_case: HealthCheckUseCase):
         logger.info("Executando limpeza de métricas antigas em background")
         # Em uma implementação real, chamaria um método de cleanup
     except Exception as e:
-        logger.error(f"Erro na limpeza de métricas: {e}")
+        logger.error(f"Erro na limpeza de métricas: {e}") 
 
 
 # Export router
