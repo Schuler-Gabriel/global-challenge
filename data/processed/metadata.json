@@ -1,0 +1,81 @@
+{
+  "config": {
+    "sequence_length": 24,
+    "forecast_horizon": 6,
+    "weather_features": [
+      "precipitacao_mm",
+      "temperatura_c",
+      "umidade_relativa",
+      "pressao_mb",
+      "velocidade_vento_ms",
+      "direcao_vento_graus",
+      "ponto_orvalho_c",
+      "visibilidade_km"
+    ],
+    "feature_columns": [
+      "precipitacao_mm",
+      "temperatura_c",
+      "umidade_relativa",
+      "pressao_mb",
+      "velocidade_vento_ms",
+      "direcao_vento_graus",
+      "ponto_orvalho_c",
+      "visibilidade_km",
+      "hora_sin",
+      "hora_cos",
+      "mes_sin",
+      "mes_cos",
+      "temp_diff",
+      "pressure_diff",
+      "humidity_diff",
+      "conforto_termico",
+      "instabilidade_atmosferica"
+    ],
+    "train_ratio": 0.7,
+    "val_ratio": 0.15,
+    "test_ratio": 0.15
+  },
+  "data_stats": {
+    "total_records": 43825,
+    "train_records": 30677,
+    "val_records": 6573,
+    "test_records": 6575,
+    "feature_count": 17,
+    "date_range": {
+      "start": "2020-01-01T00:00:00",
+      "end": "2024-12-31T00:00:00"
+    }
+  },
+  "sequences_shapes": {
+    "train": {
+      "X_shape": [
+        30648,
+        24,
+        17
+      ],
+      "y_shape": [
+        30648
+      ]
+    },
+    "validation": {
+      "X_shape": [
+        6544,
+        24,
+        17
+      ],
+      "y_shape": [
+        6544
+      ]
+    },
+    "test": {
+      "X_shape": [
+        6546,
+        24,
+        17
+      ],
+      "y_shape": [
+        6546
+      ]
+    }
+  }
+}

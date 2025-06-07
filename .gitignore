@@ -132,21 +132,6 @@ dmypy.json
 # PROJECT SPECIFIC
 # =============================================================================
 
-# Data files
-data/raw/dados_historicos/*.csv
-data/raw/dados_historicos/*.json
-data/processed/*.csv
-data/processed/*.json
-data/processed/*.pkl
-data/processed/*.parquet
-
-# ML Models
-data/modelos_treinados/*.h5
-data/modelos_treinados/*.pkl
-data/modelos_treinados/*.joblib
-data/modelos_treinados/*/
-*.pb
-*.tflite
 
 # Logs
 logs/

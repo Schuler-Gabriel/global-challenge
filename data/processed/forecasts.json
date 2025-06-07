@@ -1,0 +1,134 @@
+[
+  {
+    "timestamp": "2024-06-04T21:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.95,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 125,
+    "id": "43f28c6b-98a1-4e77-b5ba-6a3e4f19e837",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T18:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.92,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 130,
+    "id": "6d2b8e1a-c7f3-48b9-ab05-8f1dca4e36f5",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T15:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.9,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 135,
+    "id": "9e7c5a3b-2d6f-4c81-95e2-1f0ba8d45c9d",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T12:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.88,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 140,
+    "id": "f2a1e4c9-8b7d-4e6f-a3c9-5d2f1b8e7a6c",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T09:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.85,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 145,
+    "id": "1b8e7a6c-5d2f-4e6f-a3c9-f2a1e4c98b7d",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T06:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.82,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 150,
+    "id": "5d2f1b8e-7a6c-4e6f-a3c9-f2a1e4c98b7d",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T03:00:00",
+    "precipitation_mm": 0.0,
+    "confidence_score": 0.8,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 155,
+    "id": "a3c9f2a1-e4c9-4e6f-a3c9-5d2f1b8e7a6c",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-04T00:00:00",
+    "precipitation_mm": 0.1,
+    "confidence_score": 0.78,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 160,
+    "id": "e4c98b7d-1b8e-4e6f-a3c9-f2a1e4c98b7d",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-03T21:00:00",
+    "precipitation_mm": 0.2,
+    "confidence_score": 0.75,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 165,
+    "id": "f2a1e4c9-8b7d-4e6f-a3c9-1b8e7a6c5d2f",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2024-06-03T18:00:00",
+    "precipitation_mm": 0.5,
+    "confidence_score": 0.72,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 170,
+    "id": "7a6c5d2f-1b8e-4e6f-a3c9-f2a1e4c98b7d",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2025-06-04T22:28:35.300393",
+    "precipitation_mm": 0.5,
+    "confidence_score": 0.85,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 0.001,
+    "id": "94ad5535-4a49-4387-80a8-0c88b2fe6fca",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  },
+  {
+    "timestamp": "2025-06-04T22:28:35.302315",
+    "precipitation_mm": 0.5,
+    "confidence_score": 0.85,
+    "model_version": "v1.0.0",
+    "inference_time_ms": 0.002,
+    "id": "364b5f3d-8caf-4ae8-b635-ee792f220bf0",
+    "input_sequence_length": 24,
+    "forecast_horizon_hours": 24,
+    "features_used": 16
+  }
+]
