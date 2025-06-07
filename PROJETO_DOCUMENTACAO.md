@@ -24,6 +24,44 @@ Sistema inteligente de previsão meteorológica e alertas de cheias para Porto A
   - Mantidos apenas para validação local e comparação
   - *3 estações*: A801 (histórica e nova) + B807 (Belém Novo)
 
+---
+
+## ⚠️ **STATUS ATUAL DO PROJETO**
+
+### 🚧 **Sistema em Desenvolvimento - Não Completo**
+
+**IMPORTANTE**: Este sistema ainda está **EM DESENVOLVIMENTO** e **NÃO É COMPLETO**. Atualmente temos:
+
+#### ✅ **Componentes Implementados:**
+- **Backend API**: Sistema completo de previsão meteorológica e alertas (FastAPI)
+- **Modelo ML**: LSTM treinado com dados de 25+ anos para previsão de cheias
+- **Sistema de Alertas**: Feature completa com cálculo de risco e classificação
+- **Dados Históricos**: Base de dados processada (2000-2025) com 174 variáveis atmosféricas
+
+#### 🔄 **Frontend de Demonstração:**
+- **Localização**: Pasta `frontend/` (repositório clonado)
+- **Status**: Interface funcional com **dados mockados** para demonstração
+- **Propósito**: Mostrar a interface do usuário final e funcionalidades visuais
+- **Limitação**: **NÃO está conectado** ao backend real
+
+#### 🎯 **Próxima Etapa - Integração Backend + Frontend**
+
+**Objetivo**: Criar um **sistema unificado completo** integrando:
+
+1. **Conectar APIs**: Integrar as respostas do modelo ML do backend com o frontend
+2. **Dados Reais**: Substituir dados mockados por dados reais do sistema de previsão
+3. **Sistema Completo**: Entregar uma aplicação end-to-end funcional
+4. **Testes Integrados**: Validar toda a cadeia de dados (ML → API → Frontend → Usuário)
+
+#### 📋 **Trabalho Restante:**
+- [ ] Configurar comunicação entre backend (FastAPI) e frontend (React/Vue)
+- [ ] Implementar chamadas de API do frontend para os endpoints do backend
+- [ ] Adaptar formato de dados entre backend e frontend
+- [ ] Testes de integração completos
+- [ ] Deploy unificado da solução
+
+---
+
 ### 🎯 Objetivos
 
 - *IA Preditiva Avançada*: Modelo LSTM híbrido com precisão > 80% para previsão de 4 dias usando dados sinóticos
